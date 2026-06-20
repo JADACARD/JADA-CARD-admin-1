@@ -1,0 +1,127 @@
+avatar
+
+JadaCard
+
+
+*JADA CARD - Full Spec with Persistent Login*
+
+_Screen 1: Login_
+1. Header: Logo, JADA CARD, SCRATCH & WIN, Win up to UGX 1,000,000
+2. Get Started form: Full Name, Phone Number with country code dropdown
+3. Button: Play Now
+4. Footer: Terms text
+5. *Persistence*: After first login, name + phone + country code saved locally. Auto-login on app open. No re-entry required.
+
+_Screen 2: Home - Payment Gate_
+1. Top: Welcome back, [Saved Username], Logout icon
+2. Balance: Available Balance, UGX 0, Withdraw button disabled
+3. Payment card: Pay to Access Scratch Tickets
+4. Button: Pay UGX [Admin Set Amount] — Stripe link: 
+https://buy.stripe.com/5kQ4gz20Ugcm2ADgZZes000
+5. Status: Pending if not paid, Paid if admin ticks manual
+6. Bottom nav: Home, Scratch, Wallet, History
+
+_Screen 3: Home - How It Works_
+1. Stats: Total Tickets, Scratched, Total Won
+2. How It Works: STEP 1 Pay UGX [Admin Amount], STEP 2 Scratch voucher, STEP 3 Win up to UGX 1,000,000, STEP 4 Withdraw to MTN/ Airtel/Solana
+3. Bottom nav: Home, Scratch, Wallet, History
+
+_Screen 4: Scratch Card_
+1. Top: Scratch Card title
+2. Access check: If not paid → Redirect to Screen 2 Payment Gate
+3. No tickets: No Pending Tickets text, Buy a Ticket button
+4. Button: Buy Another Ticket UGX [Admin Set Amount]
+5. Bottom nav: Home, Scratch, Wallet, History
+
+_Screen 5: My Wallet_
+1. Top: My Wallet title
+2. Balance: Available Balance, UGX 4,000, Withdraw Rewards button
+3. Stats: Total Earned, Total Withdrawn
+4. Linked number: [Saved Phone Number] with country code, non-editable
+5. Withdrawal History: No withdrawal requests yet
+6. Bottom nav: Home, Scratch, Wallet, History
+
+*Withdrawal Flow:* Min 50,000 → Select Airtel/MTN/Solana → Enter number/address → Submit → Admin approves/rejects
+
+_Screen 6: Ticket History_
+1. Top: Ticket History title
+2. Summary: Purchased, Winners, Total Won, Win Rate
+3. Tabs: All, Winners, Pending
+4. List: Ticket ID, Date, Status, Amount
+5. Bottom nav: Home, Scratch, Wallet, History
+
+_Screen 7: Admin Login_
+1. Top: Admin Login title
+2. Admin Access: Shield icon, Restricted text
+3. Form: Admin Name, Lubinga Alosious Admin Phone 788417769 with country code
+4. Button: Access Admin Panel
+5. Footer: Unauthorized access text
+
+_Screen 8: Admin Panel - Settings_
+1. Top: Admin Panel title, Logout icon
+2. Tabs: Settings, Withdrawals, Users, Stats
+3. Ticket Price: Set amount UGX, locks for all users at that time. Changes apply to new purchases only
+4. Payment Status Toggle: Manual Paid ON/OFF per user. If ON → user sees "Paid". If OFF → user sees "Payment Pending". Reject option available
+5. Current Reward: UGX 2,000
+6. Scheduled Reveal Time
+
+_Screen 9: Admin Panel - Stats_
+1. Top: Admin Panel title, Logout icon
+2. Tabs: Settings, Withdrawals, Users, Stats
+3. Stats: Tickets Sold, Total Revenue, Total Payouts, Pending Requests, Winning Tickets, Current Reward, Current Ticket Price
+4. User Stats: Select user → See saved name, saved phone, tickets sold, total spent, total won, payment status
+5. Recent Tickets: Ticket ID, User, Date, Won amount
+
+*User Identity Rule:* Username + phone number tied to account permanently. Logout only clears session, data stays for next login.
+
+Here is the payment Link
+
+
+0
+Upgrade
+Describe your web app...
+
+
+Edit
+
+
+
+Preview
+
+Cloud
+
+Code
+
+Analytics
+Read-only. To edit code,
+upgrade to a paid plan.
+
+
+
+Preview
+Publish
+Search files...
+index.html
+
+index.html
+Read only
+234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950515253545556575859606162636465666768697071727374757677787980818283841
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="yUTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>JADA CARD – Scratch &amp; Win</title>
+
+  <!-- Social Meta -->
+  <meta property="og:title" content="JADA CARD – Scratch &amp; Win"/>
+  <meta property="og:description" content="Scratch your way to UGX 1,000,000! Pay, scratch, and win big with JADA CARD."/>
+  <meta property="og:url" content="https://www.onspace.ai"/>
+  <meta property="og:type" content="website"/>
+
+<body>
+  ... all your HTML ...
+
+  <!-- Put these 3 lines right before </body> -->
+  <script src="js/auth.js"></script>
+  <script src="js/cards.js"></script>
+  <script src="js/wallet.js"></script>
+</body>
