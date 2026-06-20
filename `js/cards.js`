@@ -1,0 +1,54 @@
+// js/cards.js - Scratch Card + Buy Ticket Logic
+
+let currentUser = JSON.parse(localStorage.getItem('jadaUser'));
+
+// Check payment before showing scratch
+function checkAccess() {
+  const paymentStatus = localStorage.getItem('paymentStatus');
+  
+  if (paymentStatus !== 'Paid') {
+    showPaymentScreen();
+    return false;
+  }
+  return true;
+}
+
+// Buy ticket button
+function buyTicket() {
+  const ticketPrice = localStorage.getItem('ticketPrice') || 1000;
+  
+  if (!checkAccess()) return;
+  
+  const ticket = {
+    id: 'TKT' + Date.now(),
+    date: new Date().toLocaleDateString(),
+    status: 'Pending',
+    amount: ticketPrice
+  };
+  
+  let tickets = JSON.parse(localStorage.getItem('tickets') || '[]');
+  tickets.push(ticket);
+  localStorage.setItem('tickets', JSON.stringify(tickets));
+  
+  showScratchCard(ticket);
+}
+
+// Scratch the card
+function scratchCard() {
+  const winAmount = Math.random() > 0.7 ? 2000 : 0;
+  
+  document.getElementById('winResult').innerText = 
+    winAmount > 0 ? `You won UGX ${winAmount}!` : 'Try again!';
+  
+  if (winAmount > 0) {
+    updateBalance(winAmount);
+  }
+}
+
+// Update balance after win
+function updateBalance(amount) {
+  let balance = parseInt(localStorage.getItem('balance') || '0');
+  balance += amount;
+  localStorage.setItem('balance', balance);
+  document.getElementById('balance').innerText = `UGX ${balance}`;
+}
