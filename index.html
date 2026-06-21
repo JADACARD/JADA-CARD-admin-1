@@ -1,1 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>JADA CARD – Scratch & Win</title>
+<meta property="og:title" content="JADA CARD – Scratch & Win"/>
+<meta property="og:description" content="Scratch your way to UGX 1,000,000! Pay, scratch, and win big with JADA CARD."/>
+<meta property="og:url" content="https://jadacard.github.io/JADA-CARD-"/>
+<meta property="og:type" content="website"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
+body{background:#0a0a0a;color:#fff;overflow-x:hidden}
+.screen{display:none;min-height:100vh;padding-bottom:80px}
+.screen.active{display:block}
+.header{padding:20px;text-align:center;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);font-weight:700;font-size:18px}
+.btn{width:90%;margin:15px auto;display:block;padding:15px;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);border:none;border-radius:12px;color:#fff;font-size:16px;font-weight:600;cursor:pointer}
+.btn:disabled{background:#333;cursor:not-allowed}
+input,select{width:90%;margin:10px auto;display:block;padding:14px;background:#1a1a1a;border:1px solid #333;border-radius:10px;color:#fff;font-size:15px}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:#111;border-top:1px solid #333;padding:10px 0}
+.nav-btn{flex:1;text-align:center;font-size:12px;color:#888;cursor:pointer}
+.nav-btn.active{color:#667eea}
+.card{background:#1a1a1a;margin:15px;border-radius:15px;padding:20px;border:1px solid #333}
+.stat{display:flex;justify-content:space-between;margin:10px 0;color:#aaa}
+.admin-tab{display:flex;gap:10px;padding:15px;overflow-x:auto}
+.tab-btn{padding:8px 16px;background:#222;border-radius:8px;cursor:pointer;white-space:nowrap}
+.tab-btn.active{background:#667eea}
+.scratch-area{width:90%;height:200px;margin:20px auto;background:#2a2a2a;border-radius:15px;display:flex;align-items:center;justify-content:center;font-size:18px;color:#666}
+.logout{position:absolute;top:20px;right:20px;font-size:24px;cursor:pointer}
+</style>
+</head>
+<body>
 
+<!-- Screen 1: Login -->
+<div id="login" class="screen active">
+  <div class="header">JADA CARD • SCRATCH & WIN<br>Win up to UGX 1,000,000</div>
+  <div style="padding:40px 0;text-align:center;font-size:48px">🎴</div>
+  <input id="fullName" placeholder="Full Name" required>
+  <input id="phone" placeholder="Phone Number" type="tel" required>
+  <select id="countryCode">
+    <option value="+256">🇺🇬 +256 Uganda</option>
+    <option value="+254">🇰🇪 +254 Kenya</option>
+    <option value="+255">🇹🇿 +255 Tanzania</option>
+  </select>
+  <button class="btn" onclick="login()">Play Now</button>
+  <div style="text-align:center;margin-top:30px;font-size:12px;color:#666">Terms text here</div>
+</div>
+
+<!-- Screen 2: Home - Payment Gate -->
+<div id="paymentGate" class="screen">
+  <div class="header">Home <span class="logout" onclick="logout()">🚪</span></div>
+  <div class="card">Welcome back, <span id="savedUser"></span></div>
+  <div class="card">
+    <div class="stat"><span>Available Balance</span><span>UGX <span id="balance">0</span></span></div>
+    <button class="btn" disabled>Withdraw</button>
+  </div>
+  <div class="card">
+    <div style="margin-bottom:15px">Pay to Access Scratch Tickets</div>
+    <div class="stat"><span>Ticket Price</span><span id="ticketPrice">UGX 5000</span></div>
+    <button class="btn" onclick="window.open('https://buy.stripe.com/5kQ4gz20Ugcm2ADgZZes000','_blank')">Pay UGX <span id="payAmount">5000</span></button>
+    <div style="margin-top:15px;font-size:13px;color:#888">Status: <span id="payStatus">Pending</span></div>
+  </div>
+  <div class="bottom-nav">
+    <div class="nav-btn active" onclick="showScreen('paymentGate')">Home</div>
+    <div class="nav-btn" onclick="checkPaid('scratch')">Scratch</div>
+    <div class="nav-btn" onclick="checkPaid('wallet')">Wallet</div>
+    <div class="nav-btn" onclick="checkPaid('history')">History</div>
+  </div>
+</div>
+
+<!-- Screen 3: Home - How It Works -->
+<div id="howItWorks" class="screen">
+  <div class="header">Home <span class="logout" onclick="logout()">🚪</span></div>
+  <div class="card">
+    <div class="stat"><span>Total Tickets</span><span id="totalTickets">0</span></div>
+    <div class="stat"><span>Scratched</span><span id="scratched">0</span></div>
+    <div class="stat"><span>Total Won</span><span>UGX <span id="totalWon">0</span></span></div>
+  </div>
+  <div class="card">
+    <div style="font-weight:600;margin-bottom:15px">How It Works</div>
+    <div style="font-size:14px;line-height:1.8">
+      STEP 1: Pay UGX <span id="stepPrice">5000</span><br>
+      STEP 2: Scratch voucher<br>
+      STEP 3: Win up to UGX 1,000,000<br>
+      STEP 4: Withdraw to MTN/Airtel/Solana
+    </div>
+  </div>
+  <div class="bottom-nav">
+    <div class="nav-btn active" onclick="showScreen('howItWorks')">Home</div>
+    <div class="nav-btn" onclick="checkPaid('scratch')">Scratch</div>
+    <div class="nav-btn" onclick="checkPaid('wallet')">Wallet</div>
+    <div class="nav-btn" onclick="checkPaid('history')">History</div>
+  </div>
+</div>
+
+<!-- Screen 4: Scratch Card -->
+<div id="scratch" class="screen">
+  <div class="header">Scratch Card <span class="logout" onclick="logout()">🚪</span></div>
+  <div id="noTickets" class="card" style="text-align:center">
+    No Pending Tickets<br><br>
+    <button class="btn" onclick="showScreen('paymentGate')">Buy a Ticket</button>
+  </div>
+  <div id="hasTicket" style="display:none">
+    <div class="scratch-area" onclick="revealPrize()">🎁 Tap to Scratch</div>
+    <div id="prize" style="text-align:center;font-size:24px;font-weight:700;display:none"></div>
+    <button class="btn" onclick="buyTicket()">Buy Another Ticket UGX <span id="buyAmount">5000</span></button>
+  </div>
+  <div class="bottom-nav">
+    <div class="nav-btn" onclick="showScreen('howItWorks')">Home</div>
+    <div class="nav-btn active" onclick="showScreen('scratch')">Scratch</div>
+    <div class="nav-btn" onclick="showScreen('wallet')">Wallet</div>
+    <div class="nav-btn" onclick="showScreen('history')">History</div>
+  </div>
+</div>
+
+<!-- Screen 5: My Wallet -->
+<div id="wallet" class="screen">
+  <div class="header">My Wallet <span class="logout" onclick="logout()">🚪</span></div>
+  <div class="card">
+    <div class="stat"><span>Available Balance</span><span>UGX <span id="walletBalance">4000</span></span></div>
+    <button class="btn" onclick="withdraw()">Withdraw Rewards</button>
+  </div>
+  <div class="card">
+    <div class="stat"><span>Total Earned</span><span>UGX <span id="earned">0</span></span></div>
+    <div class="stat"><span>Total Withdrawn</span><span>UGX <span id="withdrawn">0</span></span></div>
+  </div>
+  <div class="card">
+    <div style="font-size:13px;color:#888;margin-bottom:5px">Linked Number</div>
+    <div id="linkedPhone" style="font-weight:600"></div>
+  </div>
+  <div class="card">No withdrawal requests yet</div>
+  <div class="bottom-nav">
+    <div class="nav-btn" onclick="showScreen('howItWorks')">Home</div>
+    <div class="nav-btn" onclick="showScreen('scratch')">Scratch</div>
+    <div class="nav-btn active" onclick="showScreen('wallet')">Wallet</div>
+    <div class="nav-btn" onclick="showScreen('history')">History</div>
+  </div>
+</div>
+
+<!-- Screen 6: Ticket History -->
+<div id="history" class="screen">
+  <div class="header">Ticket History <span class="logout" onclick="logout()">🚪</span></div>
+  <div class="card">
+    <div class="stat"><span>Purchased</span><span id="purchased">0</span></div>
+    <div class="stat"><span>Winners</span><span id="winners">0</span></div>
+    <div class="stat"><span>Total Won</span><span>UGX <span id="wonAmount">0</span></span></div>
+    <div class="stat"><span>Win Rate</span><span id="winRate">0%</span></div>
+  </div>
+  <div class="admin-tab">
+    <div class="tab-btn active">All</div>
+    <div class="tab-btn">Winners</div>
+    <div class="tab-btn">Pending</div>
+  </div>
+  <div id="ticketList" class="card">Ticket ID • Date • Status • Amount</div>
+  <div class="bottom-nav">
+    <div class="nav-btn" onclick="showScreen('howItWorks')">Home</div>
+    <div class="nav-btn" onclick="showScreen('scratch')">Scratch</div>
+    <div class="nav-btn" onclick="showScreen('wallet')">Wallet</div>
+    <div class="nav-btn active" onclick="showScreen('history')">History</div>
+  </div>
+</div>
+
+<!-- Screen 7: Admin Login -->
+<div id="adminLogin" class="screen">
+  <div class="header">Admin Login</div>
+  <div style="text-align:center;padding:40px 0;font-size:48px">🛡️</div>
+  <div style="text-align:center;margin-bottom:20px;color:#888">Restricted</div>
+  <input id="adminName" placeholder="Admin Name">
+  <input id="adminPhone" placeholder="Admin Phone" value="788417769">
+  <select><option>+256 Uganda</option></select>
+  <button class="btn" onclick="adminLogin()">Access Admin Panel</button>
+  <div style="text-align:center;margin-top:30px;font-size:12px;color:#666">Unauthorized access prohibited</div>
+</div>
+
+<!-- Screen 8: Admin Panel - Settings -->
+<div id="adminSettings" class="screen">
+  <div class="header">Admin Panel <span class="logout" onclick="showScreen('login')">🚪</span></div>
+  <div class="admin-tab">
+    <div class="tab-btn active" onclick="showAdminTab('settings')">Settings</div>
+    <div class="tab-btn" onclick="showAdminTab('withdrawals')">Withdrawals</div>
+    <div class="tab-btn" onclick="showAdminTab('users')">Users</div>
+    <div class="tab-btn" onclick="showAdminTab('stats')">Stats</div>
+  </div>
+  <div id="settingsTab">
+    <div class="card">
+      <div style="margin-bottom:10px">Ticket Price UGX</div>
+      <input id="setPrice" type="number" value="5000">
+      <div style="font-size:12px;color:#888;margin-top:5px">Locks for all users. Changes apply to new purchases only</div>
+    </div>
+    <div class="card">
+      <div>Payment Status Toggle</div>
+      <button class="btn" onclick="togglePaid()">Manual Paid: <span id="manualPaid">OFF</span></button>
+      <button class="btn" style="background:#c0392b" onclick="rejectUser()">Reject</button>
+    </div>
+    <div class="card">
+      <div class="stat"><span>Current Reward</span><span>UGX 2000</span></div>
+      <div class="stat"><span>Scheduled Reveal Time</span><span>--:--</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- Screen 9: Admin Panel - Stats -->
+<div id="adminStats" class="screen">
+  <div class="header">Admin Panel <span class="logout" onclick="showScreen('login')">🚪</span></div>
+  <div class="admin-tab">
+    <div class="tab-btn" onclick="showAdminTab('settings')">Settings</div>
+    <div class="tab-btn" onclick="showAdminTab('withdrawals')">Withdrawals</div>
+    <div class="tab-btn" onclick="showAdminTab('users')">Users</div>
+    <div class="tab-btn active" onclick="showAdminTab('stats')">Stats</div>
+  </div>
+  <div id="statsTab">
+    <div class="card">
+      <div class="stat"><span>Tickets Sold</span><span id="ticketsSold">0</span></div>
+      <div class="stat"><span>Total Revenue</span><span>UGX <span id="revenue">0</span></span></div>
+      <div class="stat"><span>Total Payouts</span><span>UGX <span id="payouts">0</span></span></div>
+      <div class="stat"><span>Pending Requests</span><span id="pending">0</span></div>
+      <div class="stat"><span>Winning Tickets</span><span id="winningTickets">0</span></div>
+      <div class="stat"><span>Current Reward</span><span>UGX 2000</span></div>
+      <div class="stat"><span>Current Ticket Price</span><span id="currentPrice">5000</span></div>
+    </div>
+    <div class="card">
+      <div style="margin-bottom:10px">User Stats</div>
+      <select id="userSelect" onchange="loadUserStats()"><option>Select user</option></select>
+      <div id="userStats" style="margin-top:15px;font-size:14px"></div>
+    </div>
+    <div class="card">Recent Tickets: Ticket ID • User • Date • Won amount</div>
+  </div>
+</div>
+
+<script>
+let currentUser = JSON.parse(localStorage.getItem('jadaUser') || 'null');
+let ticketPrice = parseInt(localStorage.getItem('ticketPrice') || '5000');
+let isPaid = localStorage.getItem('isPaid') === 'true';
+let tickets = JSON.parse(localStorage.getItem('tickets') || '[]');
+
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');if(id.includes('payment')||id.includes('how')){document.getElementById('ticketPrice').textContent='UGX '+ticketPrice;document.getElementById('payAmount').textContent=ticketPrice;document.getElementById('stepPrice').textContent=ticketPrice;document.getElementById('buyAmount').textContent=ticketPrice}if(currentUser){document.getElementById('savedUser').textContent=currentUser.name;document.getElementById('linkedPhone').textContent=currentUser.country+currentUser.phone;document.getElementById('payStatus').textContent=isPaid?'Paid':'Pending'}updateStats()}
+
+function login(){let name=document.getElementById('fullName').value,phone=document.getElementById('phone').value,country=document.getElementById('countryCode').value;if(!name||!phone)return alert('Fill all fields');currentUser={name,phone,country};localStorage.setItem('jadaUser',JSON.stringify(currentUser));showScreen('paymentGate')}
+
+function logout(){localStorage.removeItem('isPaid');isPaid=false;showScreen('login')}
+
+function checkPaid(screen){if(!isPaid){alert('Pay first to access');return showScreen('paymentGate')}showScreen(screen)}
+
+function buyTicket(){if(!isPaid)return alert('Pay first');let ticket={id:Date.now(),date:new Date().toLocaleString(),won:Math.random()<0.3?Math.floor(Math.random()*1000000):0,status:'scratched'};tickets.push(ticket);localStorage.setItem('tickets',JSON.stringify(tickets));document.getElementById('noTickets').style.display='none';document.getElementById('hasTicket').style.display='block'}
+
+function revealPrize(){let won=tickets[tickets.length-1].won;document.getElementById('prize').textContent=won>0?'YOU WON UGX '+won.toLocaleString():'Better luck next time';document.getElementById('prize').style.display='block';updateStats()}
+
+function updateStats(){let totalWon=tickets.reduce((a,b)=>a+b.won,0),winners=tickets.filter(t=>t.won>0).length;document.getElementById('totalTickets').textContent=tickets.length;document.getElementById('scratched').textContent=tickets.length;document.getElementById('totalWon').textContent=totalWon;document.getElementById('walletBalance').textContent=totalWon;document.getElementById('earned').textContent=totalWon;document.getElementById('purchased').textContent=tickets.length;document.getElementById('winners').textContent=winners;document.getElementById('wonAmount').textContent=totalWon;document.getElementById('winRate').textContent=tickets.length?Math.round(winners/tickets.length*100)+'%':'0%'}
+
+function adminLogin(){if(document.getElementById('adminPhone').value==='788417769')showScreen('adminSettings');else alert('Invalid admin')}
+
+function showAdminTab(tab){document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));event.target.classList.add('active');document.getElementById('settingsTab').style.display=tab==='settings'?'block':'none';document.getElementById('statsTab').style.display=tab==='stats'?'block':'none';if(tab==='stats')loadStats()}
+
+function loadStats(){document.getElementById('ticketsSold').textContent=tickets.length;document.getElementById('revenue').textContent=tickets.length*ticketPrice;document.getElementById('winningTickets').textContent=tickets.filter(t=>t.won>0).length;document.getElementById('currentPrice').textContent=ticketPrice}
+
+function togglePaid(){isPaid=!isPaid;localStorage.setItem('isPaid',isPaid);document.getElementById('manualPaid').textContent=isPaid?'ON':'OFF';document.getElementById('payStatus').textContent=isPaid?'Paid':'Pending'}
+
+function withdraw(){let min=50000,balance=parseInt(document.getElementById('walletBalance').textContent);if(balance<min)return alert('Min withdrawal UGX 50,000');alert('Withdrawal request submitted. Admin will approve/reject.')}
+
+// Auto-login check
+if(currentUser)showScreen('paymentGate');
+</script>
+</body>
+</html>
