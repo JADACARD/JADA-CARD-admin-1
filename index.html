@@ -199,41 +199,4 @@ input,select{width:90%;margin:10px auto;display:block;padding:15px;background:#1
 </div>
 
 <script>
-let bal=0, ticket=false, holdTimer=0;
 
-document.addEventListener('DOMContentLoaded', function(){
-  const logo = document.getElementById('logo');
-  
-  // Method 1: Hold logo for 2 seconds
-  logo.addEventListener('mousedown', startHold);
-  logo.addEventListener('touchstart', startHold);
-  logo.addEventListener('mouseup', cancelHold);
-  logo.addEventListener('touchend', cancelHold);
-  logo.addEventListener('mouseleave', cancelHold);
-  
-  function startHold(){
-    holdTimer = setTimeout(()=>{
-      showScreen('adminlogin');
-    }, 2000);
-  }
-  function cancelHold(){
-    clearTimeout(holdTimer);
-  }
-});
-
-function showScreen(id){
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-}
-
-function showTab(t,el){
-  document.querySelectorAll('[id^=tab-]').forEach(x=>x.style.display='none');
-  document.getElementById('tab-'+t).style.display='block';
-  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
-  el.classList.add('active');
-}
-
-function login(){
-  let n=document.getElementById('fullname').value.trim().toLowerCase();
-  let p=document.getElementById('phonedigits').value.trim();
-  let c=document.getElementById('
