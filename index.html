@@ -322,7 +322,13 @@ function savePrice(){
   alert('Saved: UGX '+ticketPrice.toLocaleString());
 }
 
-
+// OPEN ADMIN VIA URL: yoururl.github.io?admin=1
+document.addEventListener('DOMContentLoaded', function(){
+  const urlParams = new URLSearchParams(window.location.search);
+  if(urlParams.get('admin') === '1'){
+    showScreen('adminlogin');
+  }
+});
 </script>
 </body>
 </html>
