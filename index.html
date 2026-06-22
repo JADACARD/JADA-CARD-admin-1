@@ -1,1 +1,224 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>jada card – scratch & win</title>
+<meta property="og:title" content="jada card – scratch & win">
+<meta property="og:description" content="scratch your way to ugx 1,000,000">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:system-ui,sans-serif}
+body{background:#05050a;color:#fff;min-height:100vh}
+.screen{display:none;padding-bottom:90px}
+.screen.active{display:block;animation:fadein 0.3s}
+@keyframes fadein{from{opacity:0;transform:translatey(10px)}to{opacity:1;transform:translatey(0)}}
+.header{padding:25px 20px;text-align:center;background:linear-gradient(135deg,#00f5ff 0%,#ff00ff 100%);font-weight:800;font-size:20px;position:relative;box-shadow:0 4px 30px rgba(0,245,255,0.3)}
+.header small{display:block;font-size:14px;opacity:0.9;margin-top:5px;font-weight:400}
+.back-btn{position:absolute;left:15px;top:18px;font-size:32px;cursor:pointer;color:#00f5ff;text-shadow:0 0 20px #00f5ff;font-weight:900}
+.back-btn:active{transform:scale(0.9)}
+.logout{position:absolute;top:22px;right:20px;font-size:24px;cursor:pointer}
+.logout:active{transform:scale(0.9)}
+.btn{width:90%;margin:18px auto;display:block;padding:16px;background:linear-gradient(135deg,#00f5ff 0%,#ff00ff 100%);border:0;border-radius:15px;color:#000;font-size:17px;font-weight:700;cursor:pointer;box-shadow:0 8px 25px rgba(0,245,255,0.4)}
+.btn:active{transform:scale(0.97)}
+.btn:disabled{background:#222;color:#666;cursor:not-allowed;box-shadow:none}
+.btn-success{background:linear-gradient(135deg,#00ff88 0%,#00cc66 100%)}
+.btn-danger{background:linear-gradient(135deg,#ff4444 0%,#cc0000 100%);color:#fff}
+input,select{width:90%;margin:12px auto;display:block;padding:15px;background:#12121a;border:2px solid #2a2a3a;border-radius:12px;color:#fff;font-size:16px}
+input:focus,select:focus{border-color:#00f5ff;outline:0;box-shadow:0 0 20px rgba(0,245,255,0.3)}
+.phone-group{display:flex;width:90%;margin:12px auto;gap:8px}
+.phone-group select{width:45%}
+.phone-group input{width:55%}
+.card{background:#12121a;margin:18px;border-radius:20px;padding:22px;border:1px solid #2a2a3a;box-shadow:0 8px 32px rgba(0,0,0,0.4)}
+.stat{display:flex;justify-content:space-between;margin:12px 0;color:#8a8a9e;font-size:15px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.05)}
+.stat:last-child{border:0}
+.scratch-area{width:90%;height:320px;margin:25px auto;background:linear-gradient(135deg,#1e1e2e 0%,#2a2a3a 100%);border-radius:25px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:24px;font-weight:800;color:#ffcc00;border:4px dashed #00f5ff;cursor:pointer;box-shadow:inset 0 0 40px rgba(0,245,255,0.2)}
+.scratch-area:active{transform:scale(0.98)}
+.scratch-amount{font-size:42px;margin-top:15px;color:#00ff88;text-shadow:0 0 20px #00ff88}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:rgba(12,12,18,0.95);backdrop-filter:blur(20px);border-top:1px solid #2a2a3a;padding:10px 0}
+.nav-btn{flex:1;text-align:center;font-size:11px;color:#8a8a9e;cursor:pointer;padding:6px 0}
+.nav-btn:active{transform:scale(0.9)}
+.nav-btn.active{color:#00f5ff;text-shadow:0 0 10px #00f5ff}
+.user-card{background:#1a1a2a;margin:10px 0;padding:12px;border-radius:10px;font-size:14px}
+.req-card{background:rgba(255,204,0,0.1);border:2px solid #ffcc00;margin:10px 0;padding:15px;border-radius:12px;font-size:14px}
+.small{font-size:12px;color:#8a8a9e;text-align:center;margin-top:8px}
+.label{font-size:12px;color:#00f5ff;margin-left:5%;display:block;margin-bottom:4px;font-weight:600}
+.tabs{display:flex;gap:8px;margin:15px 0}
+.tab{flex:1;padding:10px;border-radius:8px;background:#1a1a2a;text-align:center;font-size:13px;cursor:pointer;border:1px solid #2a2a3a;position:relative}
+.tab:active{transform:scale(0.95)}
+.tab.active{background:linear-gradient(135deg,#00f5ff,#ff00ff);color:#000;font-weight:700}
+.badge{position:absolute;top:-5px;right:-5px;background:#ff4444;color:#fff;border-radius:50%;width:22px;height:22px;font-size:11px;display:flex;align-items:center;justify-content:center;font-weight:700;border:2px solid #05050a}
+.pending-notice{background:rgba(255,204,0,0.15);border:2px solid #ffcc00;padding:15px;border-radius:12px;margin:15px 18px;text-align:center;font-size:15px;font-weight:600}
+.how-step{background:#1a1a2a;padding:12px;border-radius:10px;margin:8px 0;font-size:14px;border-left:3px solid #00f5ff}
+#prize{animation:winpop 0.6s cubic-bezier(0.68,-0.55,0.265,1.55)}
+@keyframes winpop{0%{transform:scale(0) rotate(-180deg)}100%{transform:scale(1) rotate(0)}}
+</style>
+</head>
+<body>
 
+<!-- 1. LOGIN SCREEN -->
+<div id="login" class="screen active">
+  <div class="header">🎴 jada card<br>scratch & win<br><small>win up to ugx 1,000,000</small></div>
+  <div style="text-align:center;padding:40px 0;font-size:70px;filter:drop-shadow(0 0 30px #00f5ff)">🎴</div>
+  <input id="fullname" placeholder="full name" required>
+  <div class="label">🌍 select your country + 9 digits</div>
+  <div class="phone-group">
+    <select id="countrycode" required></select>
+    <input id="phonedigits" placeholder="9 digits only" type="tel" maxlength="9" inputmode="numeric">
+  </div>
+  <button class="btn" onclick="userLogin()">play now</button>
+  <div class="small">by playing you agree to terms & conditions</div>
+  <div style="text-align:center;margin-top:25px">
+    <button onclick="showScreen('adminlogin')" style="background:none;border:0;color:#00f5ff;font-size:13px">admin login 🔐</button>
+  </div>
+</div>
+
+<!-- 2. HOME SCREEN -->
+<div id="home" class="screen">
+  <div class="header"><span class="back-btn" onclick="backToLogin()">←</span>home <span class="logout" onclick="logout()">🚪</span></div>
+  <div class="card">welcome back, <span id="saveduser" style="color:#00f5ff;font-weight:700"></span> 👋</div>
+
+  <div id="pendingnotice" class="pending-notice" style="display:none"></div>
+
+  <div class="card">
+    <div class="stat"><span>💰 available balance</span><span style="color:#ffcc00;font-weight:700">ugx <span id="balance">0</span></span></div>
+    <button class="btn" id="withdrawbtn" onclick="requestWithdraw()" disabled>withdraw - min 50,000</button>
+  </div>
+  <div class="card">
+    <div style="margin-bottom:15px;font-weight:700;font-size:16px">🎟️ pay to access scratch tickets</div>
+    <div class="stat"><span>ticket price</span><span style="color:#ff00ff;font-weight:700">ugx <span id="ticketprice">5000</span></span></div>
+    <button class="btn" id="paybtn" onclick="payTicket()">pay ugx <span id="payamount">5000</span></button>
+    <div style="margin-top:15px;font-size:14px">status: <span id="paystatus" style="color:#ffcc00;font-weight:700">pending</span></div>
+  </div>
+  <div class="card">
+    <div style="font-weight:700;margin-bottom:12px">how it works</div>
+    <div class="how-step">step 1: pay ugx <span id="pricehow">5000</span> to unlock tickets</div>
+    <div class="how-step">step 2: wait for admin Lubinga Alosious approval</div>
+    <div class="how-step">step 3: scratch big ticket to reveal prize</div>
+    <div class="how-step">step 4: win up to ugx 1,000,000</div>
+    <div class="how-step">step 5: withdraw to mtn/airtel/solana</div>
+  </div>
+  <div class="bottom-nav">
+    <div class="nav-btn active" onclick="showScreen('home')">🏠 home</div>
+    <div class="nav-btn" onclick="goScratch()">🎫 scratch</div>
+    <div class="nav-btn" onclick="goWallet()">💼 wallet</div>
+    <div class="nav-btn" onclick="goHistory()">📜 history</div>
+  </div>
+</div>
+
+<!-- 3. SCRATCH SCREEN -->
+<div id="scratch" class="screen">
+  <div class="header"><span class="back-btn" onclick="showScreen('home')">←</span>scratch card <span class="logout" onclick="logout()">🚪</span></div>
+  <div id="notickets" class="card" style="text-align:center">
+    <div style="font-size:60px;margin-bottom:15px">🎟️</div>
+    <div id="noticketmsg" style="font-size:18px;margin-bottom:10px">no ticket yet</div>
+    <button class="btn" onclick="showScreen('home')">💳 buy a ticket</button>
+  </div>
+  <div id="hasticket" style="display:none">
+    <div class="scratch-area" id="scratcharea" onclick="scratchCard()">
+      <div>🎴 JADA CARD</div>
+      <div style="font-size:18px;margin-top:10px">BIG WINNER TICKET</div>
+      <div class="scratch-amount">ugx <span id="windisplay">2000</span></div>
+      <div style="font-size:16px;margin-top:15px">👆 TAP TO SCRATCH</div>
+    </div>
+    <div id="prize" style="text-align:center;font-size:28px;font-weight:800;margin:25px;display:none;color:#ffcc00"></div>
+    <button class="btn" onclick="buyTicket()">🎟️ buy another ticket ugx <span id="pricebuy">5000</span></button>
+  </div>
+  <div class="bottom-nav">
+    <div class="nav-btn" onclick="showScreen('home')">🏠 home</div>
+    <div class="nav-btn active" onclick="showScreen('scratch')">🎫 scratch</div>
+    <div class="nav-btn" onclick="goWallet()">💼 wallet</div>
+    <div class="nav-btn" onclick="goHistory()">📜 history</div>
+  </div>
+</div>
+
+<!-- 4. WALLET SCREEN -->
+<div id="wallet" class="screen">
+  <div class="header"><span class="back-btn" onclick="showScreen('home')">←</span>my wallet <span class="logout" onclick="logout()">🚪</span></div>
+  <div class="card">
+    <div class="stat"><span>💰 available balance</span><span style="color:#ffcc00;font-size:18px;font-weight:700">ugx <span id="walletbalance">0</span></span></div>
+    <button class="btn" id="withdrawbtn2" onclick="requestWithdraw()">💸 withdraw rewards</button>
+  </div>
+  <div class="card">
+    <div class="stat"><span>📈 total earned</span><span style="color:#00f5ff" id="earned">0</span></div>
+    <div class="stat"><span>📉 total withdrawn</span><span style="color:#ff00ff" id="withdrawn">0</span></div>
+  </div>
+  <div class="card">
+    <div style="font-size:13px;color:#8a8a9e">🔗 linked number</div>
+    <div id="linkedphone" style="font-weight:700;margin-top:8px;color:#00f5ff"></div>
+  </div>
+  <div id="withdrawhistory" class="card">📋 no withdrawal requests yet</div>
+  <div class="bottom-nav">
+    <div class="nav-btn" onclick="showScreen('home')">🏠 home</div>
+    <div class="nav-btn" onclick="goScratch()">🎫 scratch</div>
+    <div class="nav-btn active" onclick="showScreen('wallet')">💼 wallet</div>
+    <div class="nav-btn" onclick="goHistory()">📜 history</div>
+  </div>
+</div>
+
+<!-- 5. HISTORY SCREEN -->
+<div id="history" class="screen">
+  <div class="header"><span class="back-btn" onclick="showScreen('home')">←</span>ticket history <span class="logout" onclick="logout()">🚪</span></div>
+  <div class="card">
+    <div class="stat"><span>🛒 purchased</span><span style="color:#00f5ff" id="purchased">0</span></div>
+    <div class="stat"><span>🏆 winners</span><span style="color:#ffcc00" id="winners">0</span></div>
+    <div class="stat"><span>💎 total won</span><span style="color:#ff00ff;font-weight:700">ugx <span id="wonamount">0</span></span></div>
+    <div class="stat"><span>📊 win rate</span><span style="color:#00f5ff" id="winrate">0%</span></div>
+  </div>
+  <div class="tabs">
+    <div class="tab active" onclick="filterTickets('all')">all</div>
+    <div class="tab" onclick="filterTickets('winners')">winners</div>
+    <div class="tab" onclick="filterTickets('pending')">pending</div>
+  </div>
+  <div id="ticketlist" class="card" style="font-size:13px;line-height:2">📭 no tickets yet</div>
+  <div class="bottom-nav">
+    <div class="nav-btn" onclick="showScreen('home')">🏠 home</div>
+    <div class="nav-btn" onclick="goScratch()">🎫 scratch</div>
+    <div class="nav-btn" onclick="goWallet()">💼 wallet</div>
+    <div class="nav-btn active" onclick="showScreen('history')">📜 history</div>
+  </div>
+</div>
+
+<!-- 6. ADMIN LOGIN - LUBINGA ALOSIOUS -->
+<div id="adminlogin" class="screen">
+  <div class="header"><span class="back-btn" onclick="showScreen('login')">←</span>admin login</div>
+  <div style="text-align:center;padding:50px 0;font-size:70px">🛡️</div>
+  <div style="text-align:center;font-size:13px;color:#8a8a9e;margin-bottom:20px">admin: Lubinga Alosious</div>
+  <input id="adminname" placeholder="admin name" value="Lubinga Alosious">
+  <div class="label">🌍 select country code</div>
+  <div class="phone-group">
+    <select id="admincountry"></select>
+    <input id="adminphonedigits" placeholder="9 digits" value="788417769">
+  </div>
+  <button class="btn" onclick="adminLogin()">access admin panel</button>
+  <div class="small">🔒 restricted access only</div>
+</div>
+
+<!-- 7. ADMIN PANEL -->
+<div id="adminpanel" class="screen">
+  <div class="header"><span class="back-btn" onclick="showScreen('login')">←</span>admin panel - Lubinga Alosious <span class="logout" onclick="showScreen('login')">🚪</span></div>
+  <div class="tabs">
+    <div class="tab active" onclick="adminTab('settings')">settings</div>
+    <div class="tab" onclick="adminTab('users')">users <span id="userbadge" class="badge" style="display:none">0</span></div>
+    <div class="tab" onclick="adminTab('withdrawals')">withdrawals <span id="withdrawbadge" class="badge" style="display:none">0</span></div>
+  </div>
+  <div id="admin-settings" class="admin-content">
+    <div class="card">
+      <div style="font-weight:700;margin-bottom:12px;color:#00f5ff">🎟️ ticket price ugx</div>
+      <input id="setprice" type="number" value="5000">
+      <button class="btn" onclick="savePrice()">💾 save price</button>
+    </div>
+    <div class="card">
+      <div style="font-weight:700;margin-bottom:12px;color:#ff00ff">🏆 set winning amount ugx</div>
+      <input id="setwinamount" type="number" value="2000" placeholder="enter any amount">
+      <button class="btn btn-success" onclick="saveWinAmount()">🔒 lock amount</button>
+      <div class="small">all users will see this amount on scratch card</div>
+    </div>
+  </div>
+  <div id="admin-users" class="admin-content" style="display:none">
+    <div class="card">
+      <div style="font-weight:700;margin-bottom:12px;color:#00f5ff">👥 users pending payment approval</div>
+      <div id="userlist"></div>
+    </div>
+  </div>
+  <div id="admin-withdrawals" class="admin-content" style="display:none">
+    <div
