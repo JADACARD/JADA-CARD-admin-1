@@ -317,4 +317,132 @@ function showScreen(id){
   if(id==='history') loadHistory();
   if(id==='scratch' && currentUser && currentUser.hasTicket) setTimeout(initScratch,100);
 }
+function loadUsers(){
+  let html = '';
+  let count = 0;
+  gameData.users.forEach((u,i)=>{
+    if(u.paid && u.notified &&!u.hasTicket){
+      count++;
+      html += '<div class="user-row"><div style="flex:1"><div style="font-weight:700">'+u.name+'</div><div style="font-size:12px;color:#888">'+u.phone+'</div><div style="font-size:11px;color:#ffaa00">📢 Requested ticket</div></div><div style="display:flex;gap:6px"><button class="btn btn-success" style="width:auto;padding:8px 12px;font-size:12px;margin:0" onclick="acceptTicket('+i+')">✅ Accept</button><button class="btn btn-danger" style="width:auto;padding:8px 12px;font-size:12px;margin:0" onclick="rejectTicket('+i+')">❎ Reject</button></div></div>';
+    }
+  });
+  document.getElementById('userlist').innerHTML = html || 'no pending requests';
+  document.getElementById('userbadge').style.display = count>0? 'flex' : 'none';
+  document.getElementById('userbadge').innerText = count;
+}
 
+function acceptTicketFromBell(i){
+  let user = gameData.users.filter(u=>u.paid && u.notified &&!u.hasTicket)[i];
+  let realIndex = gameData.users.findIndex(u=>u.phone===user.phone);
+  acceptTicket(realIndex);
+  document.getElementById('notifpopup').classList.remove('active');
+}
+
+function rejectTicketFromBell(i){
+  let user = gameData.users.filter(u=>u.paid && u.notified &&!u.hasTicket)[i];
+  let realIndex = gameData.users.findIndex(u=>u.phone===user.phone);
+  rejectTicket(realIndex);
+  document.getElementById('notifpopup').classList.remove('active');
+}
+
+function acceptTicket(i){
+  let winAmount = gameData.settings.winAmount;
+  let isWin = Math.random() < 0.4;
+
+  gameData.users[i].hasTicket = true;
+  gameData.users[i].paid = false;
+  gameData.users[i].notified = false;
+  gameData.users[i].currentTicket = {win:isWin, amount:isWin?winAmount:0, scratched:false};
+
+  if(!gameData.users[i].notifications) gameData.users[i].notifications = [];
+  gameData.users[i].notifications.push({msg:'🎉 JADA CARD issued your ticket! Go scratch it now.', time:new Date().toLocaleString(), read:false});
+
+  saveData();
+  alert('Ticket ISSUED for '+gameData.users[i].name);
+  loadUsers();
+  updateBellBadge();
+}
+
+function rejectTicket(i){
+  gameData.users[i].paid = false;
+  gameData.users[i].notified = false;
+  if(!gameData.users[i].notifications) gameData.users[i].notifications = [];
+  gameData.users[i].notifications.push({msg:'❌ JADA CARD rejected your payment request. Please try again.', time:new Date().toLocaleString(), read:false});
+
+  saveData();
+  alert('Ticket REJECTED for '+gameData.users[i].name);
+  loadUsers();
+  updateBellBadge();
+}
+
+function loadTicketRecords(){
+  let html = '';
+  if(gameData.ticketRecords.length>0){
+    gameData.ticketRecords.slice().reverse().forEach(t=>{
+      html += '<div class="user-row"><div><div style="font-weight:700">'+t.user+'</div><div style="font-size:11px;color:#888">'+t.phone+'</div><div style="font-size:10px;color:#666">'+t.date+'</div></div><div style="text-align:right"><div style="font-weight:700;color:'+(t.result==='WIN'?'#00ff88':'#ff0044')+'">'+t.result+'</div><div style="font-size:12px;color:#00ff88">UGX '+t.amount.toLocaleString()+'</div></div></div>';
+    });
+  }
+  document.getElementById('ticketrecords').innerHTML = html || 'no records yet';
+}
+
+function requestWithdraw(){
+  if(currentUser.balance < 50000){alert('Min withdrawal UGX 50,000');return;}
+  let amt = currentUser.balance;
+  currentUser.withdrawals.push({amount:amt, status:'pending', date:new Date().toLocaleString()});
+  currentUser.balance = 0;
+
+  let idx = gameData.users.findIndex(u=>u.phone===currentUser.phone);
+  gameData.users[idx] = currentUser;
+  saveData();
+  updateUI();
+  alert('Withdrawal request sent to JADA CARD');
+}
+
+function loadWithdrawals(){
+  let html = '';
+  let count = 0;
+  gameData.users.forEach((u,ui)=>{
+    u.withdrawals.forEach((w,wi)=>{
+      if(w.status==='pending'){
+        count++;
+        html += '<div class="user-row"><div><div style="font-weight:700">'+u.name+'</div><div style="font-size:12px;color:#888">'+u.phone+'</div><div style="font-size:13px;color:#00ff88">UGX '+w.amount.toLocaleString()+'</div></div><div><button class="btn btn-success" style="width:auto;padding:8px 12px;font-size:12px;margin:3px" onclick="approveWithdraw('+ui+','+wi+')">Approve</button><button class="btn btn-danger" style="width:auto;padding:8px 12px;font-size:12px;margin:3px" onclick="rejectWithdraw('+ui+','+wi+')">Reject</button></div></div>';
+      }
+    });
+  });
+  document.getElementById('withdrawrequests').innerHTML = html || 'none';
+  document.getElementById('withdrawbadge').style.display = count>0? 'flex' : 'none';
+  document.getElementById('withdrawbadge').innerText = count;
+}
+
+function approveWithdraw(ui,wi){
+  gameData.users[ui].withdrawals[wi].status = 'approved';
+  if(!gameData.users[ui].notifications) gameData.users[ui].notifications = [];
+  gameData.users[ui].notifications.push({msg:'✅ JADA CARD approved your withdrawal UGX '+gameData.users[ui].withdrawals[wi].amount.toLocaleString(), time:new Date().toLocaleString(), read:false});
+  saveData();
+  alert('Withdrawal approved');
+  loadWithdrawals();
+}
+
+function rejectWithdraw(ui,wi){
+  let amt = gameData.users[ui].withdrawals[wi].amount;
+  gameData.users[ui].balance += amt;
+  gameData.users[ui].withdrawals[wi].status = 'rejected';
+  if(!gameData.users[ui].notifications) gameData.users[ui].notifications = [];
+  gameData.users[ui].notifications.push({msg:'❌ JADA CARD rejected your withdrawal. UGX '+amt.toLocaleString()+' returned to balance.', time:new Date().toLocaleString(), read:false});
+  saveData();
+  alert('Withdrawal rejected - money returned');
+  loadWithdrawals();
+}
+
+function loadHistory(){
+  let html = '';
+  if(currentUser && currentUser.history.length>0){
+    currentUser.history.slice().reverse().forEach(h=>{
+      html += '<div class="user-row"><div><div style="font-weight:700">'+h.result+'</div><div style="font-size:12px;color:#888">'+h.date+'</div></div><div style="color:#00ff88;font-weight:700">UGX '+h.amount.toLocaleString()+'</div></div>';
+    });
+  }
+  document.getElementById('historylist').innerHTML = html || 'no tickets yet';
+}
+</script>
+</body>
+</html>
