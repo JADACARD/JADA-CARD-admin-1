@@ -1,1 +1,485 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JADA CARD</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
+body{background:#05050a;color:#fff;min-height:100vh;max-width:480px;margin:0 auto;padding-bottom:100px}
+.screen{display:none}.screen.active{display:block}
+.header{padding:20px;text-align:center;background:linear-gradient(135deg,#00f5ff 0%,#ff00ff 100%);font-weight:800;font-size:20px;color:#000;position:relative}
+.back-btn{position:absolute;left:15px;top:50%;transform:translateY(-50%);font-size:26px;cursor:pointer}
+.logout{position:absolute;right:15px;top:50%;transform:translateY(-50%);font-size:22px;cursor:pointer}
+.btn{width:90%;margin:15px auto;display:block;padding:16px;background:linear-gradient(135deg,#00f5ff 0%,#ff00ff 100%);border:0;border-radius:14px;color:#000;font-size:16px;font-weight:700;cursor:pointer}
+.btn:disabled{background:#333;color:#666}
+.btn-success{background:linear-gradient(135deg,#00ff88,#00cc66)}
+.btn-danger{background:linear-gradient(135deg,#ff0044,#cc0033);color:#fff}
+input,select{width:90%;margin:10px auto;display:block;padding:15px;background:#12121a;border:2px solid #2a2a3a;border-radius:12px;color:#fff;font-size:16px}
+.phone-group{display:flex;width:90%;margin:10px auto;gap:8px}
+.phone-group select{width:45%}.phone-group input{width:55%}
+.card{background:#12121a;margin:14px;border-radius:18px;padding:20px;border:1px solid #2a2a3a}
+.scratch-area{width:90%;height:260px;margin:20px auto;background:#1e1e2e;border-radius:24px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:#ffcc00;border:3px dashed #00f5ff;cursor:pointer}
+.scratch-amount{font-size:36px;margin-top:12px;color:#00ff88}
+.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;display:flex;background:#0c0c14;border-top:1px solid #1e1e2e;padding:8px 0}
+.nav-btn{flex:1;text-align:center;font-size:11px;color:#666;cursor:pointer;padding:5px 0}
+.nav-btn.icon{font-size:20px;display:block}
+.nav-btn.active{color:#00f5ff}
+.label{font-size:12px;color:#00f5ff;margin-left:5%;display:block;margin-bottom:3px;font-weight:600}
+.brand-hero{padding:40px 20px;text-align:center}
+.brand-icon{font-size:70px;margin-bottom:15px}
+.brand-name{font-size:28px;font-weight:900;color:#00f5ff}
+.brand-prize{font-size:20px;font-weight:800;color:#ffcc00;margin-top:8px}
+.balance-big{text-align:center;padding:25px 20px}
+.balance-big.amount{font-size:40px;font-weight:800;color:#00ff88;margin-top:5px}
+.result-win{margin:14px;border-radius:20px;padding:25px;text-align:center;background:#00ff8812;border:2px solid #00ff88}
+.result-amount-win{font-size:48px;font-weight:900;color:#00ff88}
+.result-lose{margin:14px;border-radius:20px;padding:25px;text-align:center;background:#1e1e2e;border:2px solid #2a2a3a;color:#666;font-size:36px;font-weight:900}
+.tabs{display:flex;gap:8px;margin:12px 14px}
+.tab{flex:1;padding:10px 6px;border-radius:10px;background:#1a1a2a;text-align:center;font-size:12px;cursor:pointer;border:1px solid #2a2a3a;font-weight:600;position:relative}
+.tab.active{background:linear-gradient(135deg,#00f5ff,#ff00ff);color:#000}
+.badge{position:absolute;top:-5px;right:-5px;background:#ff0044;color:#fff;border-radius:50%;width:20px;height:20px;font-size:11px;display:flex;align-items:center;justify-content:center;font-weight:800}
+.admin-content{display:none}
+.admin-content.active{display:block}
+.small{font-size:11px;color:#666;margin-top:5px;text-align:center}
+.user-row{padding:12px;border-bottom:1px solid #2a2a3a;display:flex;justify-content:space-between;align-items:center}
+.user-row:last-child{border-bottom:0}
+</style>
+</head>
+<body>
+
+<div id="login" class="screen active">
+  <div class="brand-hero">
+    <div class="brand-icon">🎴</div>
+    <div class="brand-name">JADA CARD</div>
+    <div style="color:#888;margin-top:6px">scratch & win</div>
+    <div class="brand-prize">🏆 win up to ugx 1,000,000</div>
+  </div>
+  <span class="label">full name</span>
+  <input id="fullname" placeholder="enter your full name">
+  <span class="label">🌍 country + phone 9 digits</span>
+  <div class="phone-group">
+    <select id="countrycode">
+      <option value="">country</option>
+      <option value="+256">🇺🇬 +256 Uganda</option>
+      <option value="+254">🇰🇪 +254 Kenya</option>
+      <option value="+255">🇹🇿 +255 Tanzania</option>
+      <option value="+250">🇷🇼 +250 Rwanda</option>
+      <option value="+257">🇧🇮 +257 Burundi</option>
+      <option value="+27">🇿🇦 +27 South Africa</option>
+      <option value="+234">🇳🇬 +234 Nigeria</option>
+      <option value="+233">🇬🇭 +233 Ghana</option>
+      <option value="+243">🇨🇩 +243 Congo DR</option>
+      <option value="+242">🇨🇬 +242 Congo</option>
+    </select>
+    <input id="phonedigits" placeholder="9 digits" type="tel" maxlength="9">
+  </div>
+  <button class="btn" onclick="login()">🎮 play now</button>
+</div>
+
+<div id="adminlogin" class="screen">
+  <div class="header"><span class="back-btn" onclick="showScreen('login')">←</span>admin login</div>
+  <div style="text-align:center;padding:50px;font-size:60px">🛡️</div>
+  <span class="label">admin name</span>
+  <input id="adminname" placeholder="JADA CARD" type="text">
+  <span class="label">🌍 select country code</span>
+  <div class="phone-group">
+    <select id="admincountry">
+      <option value="">country</option>
+      <option value="+256">🇺🇬 +256 Uganda</option>
+      <option value="+254">🇰🇪 +254 Kenya</option>
+      <option value="+255">🇹🇿 +255 Tanzania</option>
+      <option value="+250">🇷🇼 +250 Rwanda</option>
+      <option value="+257">🇧🇮 +257 Burundi</option>
+      <option value="+27">🇿🇦 +27 South Africa</option>
+      <option value="+234">🇳🇬 +234 Nigeria</option>
+      <option value="+233">🇬🇭 +233 Ghana</option>
+      <option value="+243">🇨🇩 +243 Congo DR</option>
+      <option value="+242">🇨🇬 +242 Congo</option>
+    </select>
+    <input id="adminphonedigits" placeholder="9 digits" type="tel" maxlength="9">
+  </div>
+  <button class="btn" onclick="adminLogin()">login</button>
+</div>
+
+<div id="adminpanel" class="screen">
+  <div class="header">
+    <span class="back-btn" onclick="showScreen('login')">←</span>
+    admin panel
+    <span class="logout" onclick="logout()">🚪</span>
+  </div>
+  <div class="tabs">
+    <div class="tab active" onclick="adminTab('settings',this)">⚙️ settings</div>
+    <div class="tab" onclick="adminTab('users',this)">👥 users</div>
+    <div class="tab" onclick="adminTab('withdrawals',this)" style="position:relative">withdrawals <span id="withdrawbadge" class="badge" style="display:none">0</span></div>
+  </div>
+  <div id="admin-settings" class="admin-content active">
+    <div class="card">
+      <div style="font-weight:700;margin-bottom:10px">🎟️ ticket price UGX</div>
+      <input id="setprice" type="number" value="5000">
+      <button class="btn" onclick="savePrice()">save price</button>
+    </div>
+    <div class="card">
+      <div style="font-weight:700;margin-bottom:10px">🏆 win amount UGX - hidden from user</div>
+      <input id="setwinamount" type="number" value="2000">
+      <button class="btn btn-success" onclick="saveWinAmount()">🔒 lock set amount</button>
+      <div class="small">user only sees amount after scratching</div>
+    </div>
+  </div>
+  <div id="admin-users" class="admin-content">
+    <div class="card">
+      <div style="font-weight:700;margin-bottom:10px">users who paid - tick to issue ticket</div>
+      <div id="userlist" style="color:#666;text-align:center">no users yet</div>
+    </div>
+  </div>
+  <div id="admin-withdrawals" class="admin-content">
+    <div class="card">
+      <div style="font-weight:700;margin-bottom:10px">withdrawal requests - approve or reject</div>
+      <div id="withdrawrequests" style="color:#666;text-align:center">none</div>
+    </div>
+  </div>
+</div>
+
+<div id="home" class="screen">
+  <div class="header">
+    <span class="back-btn" onclick="showScreen('login')">←</span>
+    jada card
+    <span class="logout" onclick="logout()">🚪</span>
+  </div>
+  <div class="card" style="border:1px solid #00f5ff">
+    <div class="balance-big">
+      <div style="font-size:13px;color:#888">your balance</div>
+      <div class="amount">ugx <span id="balance">0</span></div>
+      <div style="font-size:13px;color:#888;margin-top:4px">min withdrawal: ugx 50,000</div>
+    </div>
+    <button class="btn" id="wbtn" disabled onclick="requestWithdraw()">💸 withdraw</button>
+  </div>
+  <div class="card">
+    <div style="font-weight:800;font-size:16px;margin-bottom:8px">🎟️ get ticket</div>
+    <div style="font-size:12px;color:#888;margin-bottom:16px">price: ugx <span id="ticketprice">5,000</span></div>
+    <div id="ticketstatus" style="color:#ffcc00;font-size:13px;margin-bottom:10px;text-align:center"></div>
+    <button class="btn" onclick="pay()">buy ticket</button>
+  </div>
+  <div class="bottom-nav">
+    <div class="nav-btn active" onclick="showScreen('home')"><span class="icon">🏠</span>home</div>
+    <div class="nav-btn" onclick="showScreen('scratch')"><span class="icon">🎴</span>scratch</div>
+    <div class="nav-btn" onclick="showScreen('wallet')"><span class="icon">💰</span>wallet</div>
+    <div class="nav-btn" onclick="showScreen('history')"><span class="icon">📋</span>history</div>
+  </div>
+</div>
+
+<div id="scratch" class="screen">
+  <div class="header">
+    <span class="back-btn" onclick="showScreen('home')">←</span>
+    scratch card
+    <span class="logout" onclick="logout()">🚪</span>
+  </div>
+  <div id="no" class="card" style="text-align:center;padding:30px">
+    <div style="font-size:50px">🎟️</div>
+    <div style="color:#888;margin:16px 0">no ticket yet</div>
+    <div style="color:#ffcc00;font-size:13px;margin-bottom:16px" id="nostatus"></div>
+    <button class="btn" onclick="pay()">buy ticket</button>
+  </div>
+  <div id="yes" style="display:none">
+    <div class="scratch-area" id="area" onclick="scratch()">
+      <div>🎴 JADA CARD</div>
+      <div style="font-size:14px;margin-top:8px;color:#aaa">WINNER TICKET</div>
+      <div class="scratch-amount">ugx <span id="win">???</span></div>
+      <div style="font-size:14px;margin-top:15px;color:#00f5ff">👆 TAP TO SCRATCH</div>
+    </div>
+    <div id="res"></div>
+  </div>
+  <div class="bottom-nav">
+    <div class="nav-btn" onclick="showScreen('home')"><span class="icon">🏠</span>home</div>
+    <div class="nav-btn active" onclick="showScreen('scratch')"><span class="icon">🎴</span>scratch</div>
+    <div class="nav-btn" onclick="showScreen('wallet')"><span class="icon">💰</span>wallet</div>
+    <div class="nav-btn" onclick="showScreen('history')"><span class="icon">📋</span>history</div>
+  </div>
+</div>
+
+<div id="wallet" class="screen">
+  <div class="header">
+    <span class="back-btn" onclick="showScreen('home')">←</span>
+    wallet
+    <span class="logout" onclick="logout()">🚪</span>
+  </div>
+  <div class="card" style="border:1px solid #00f5ff">
+    <div class="balance-big">
+      <div style="font-size:13px;color:#888">balance</div>
+      <div class="amount">ugx <span id="wbal">0</span></div>
+    </div>
+    <button class="btn" id="wbtn2" disabled onclick="requestWithdraw()">💸 withdraw</button>
+  </div>
+  <div id="withdrawhistory" style="margin:20px 14px;color:#666;text-align:center">no withdrawals yet</div>
+  <div class="bottom-nav">
+    <div class="nav-btn" onclick="showScreen('home')"><span class="icon">🏠</span>home</div>
+    <div class="nav-btn" onclick="showScreen('scratch')"><span class="icon">🎴</span>scratch</div>
+    <div class="nav-btn active" onclick="showScreen('wallet')"><span class="icon">💰</span>wallet</div>
+    <div class="nav-btn" onclick="showScreen('history')"><span class="icon">📋</span>history</div>
+  </div>
+</div>
+
+<div id="history" class="screen">
+  <div class="header">
+    <span class="back-btn" onclick="showScreen('home')">←</span>
+    history
+    <span class="logout" onclick="logout()">🚪</span>
+  </div>
+  <div id="historylist" style="margin:20px 14px;color:#666;text-align:center">no tickets yet</div>
+  <div class="bottom-nav">
+    <div class="nav-btn" onclick="showScreen('home')"><span class="icon">🏠</span>home</div>
+    <div class="nav-btn" onclick="showScreen('scratch')"><span class="icon">🎴</span>scratch</div>
+    <div class="nav-btn" onclick="showScreen('wallet')"><span class="icon">💰</span>wallet</div>
+    <div class="nav-btn active" onclick="showScreen('history')"><span class="icon">📋</span>history</div>
+  </div>
+</div>
+
+<script>
+let currentUser = null;
+let gameData = {users:[], settings:{ticketPrice:5000, winAmount:2000}};
+
+function loadData(){
+  const saved = localStorage.getItem('jadacard_data_v2');
+  if(saved) gameData = JSON.parse(saved);
+  document.getElementById('setprice').value = gameData.settings.ticketPrice;
+  document.getElementById('setwinamount').value = gameData.settings.winAmount;
+  document.getElementById('ticketprice').innerText = gameData.settings.ticketPrice.toLocaleString();
+}
+
+function saveData(){
+  localStorage.setItem('jadacard_data_v2', JSON.stringify(gameData));
+}
+
+window.addEventListener('load', function(){
+  loadData();
+  const urlParams = new URLSearchParams(window.location.search);
+  if(urlParams.get('admin') === '1'){
+    showScreen('adminlogin');
+    return;
+  }
+  const savedUser = localStorage.getItem('jadacard_currentuser_v2');
+  if(savedUser){
+    currentUser = JSON.parse(savedUser);
+    showScreen('home');
+    updateUI();
+  }
+});
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+  if(id==='admin-users') loadUsers();
+  if(id==='admin-withdrawals') loadWithdrawals();
+  if(id==='history') loadHistory();
+}
+
+function adminTab(t,el){
+  document.querySelectorAll('.admin-content').forEach(x=>x.classList.remove('active'));
+  document.getElementById('admin-'+t).classList.add('active');
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function login(){
+  let n=document.getElementById('fullname').value.trim();
+  let p=document.getElementById('phonedigits').value.trim();
+  let c=document.getElementById('countrycode').value;
+  if(n.length<3||p.length!=9||c==''){alert('Fill all fields');return;}
+  let phone = c + p;
+
+  let user = gameData.users.find(u=>u.phone===phone);
+  if(!user){
+    user = {name:n, phone:phone, balance:0, hasTicket:false, paid:false, history:[], withdrawals:[], notifications:[]};
+    gameData.users.push(user);
+    saveData();
+  }
+  currentUser = user;
+  localStorage.setItem('jadacard_currentuser_v2', JSON.stringify(currentUser));
+  showScreen('home');
+  updateUI();
+}
+
+function adminLogin(){
+  let n=document.getElementById('adminname').value.trim().toUpperCase();
+  let c=document.getElementById('admincountry').value;
+  let p=document.getElementById('adminphonedigits').value.trim();
+  if(n!='JADA CARD'||c!='+256'||p!='788417769'){alert('Wrong credentials');return;}
+  showScreen('adminpanel');
+}
+
+function logout(){
+  currentUser = null;
+  localStorage.removeItem('jadacard_currentuser_v2');
+  showScreen('login');
+}
+
+function updateUI(){
+  if(!currentUser) return;
+
+  if(currentUser.notifications && currentUser.notifications.length>0){
+    let unread = currentUser.notifications.filter(n=>!n.read);
+    if(unread.length>0){
+      alert(unread[unread.length-1].msg);
+      unread.forEach(n=>n.read=true);
+      saveData();
+    }
+  }
+
+  document.getElementById('balance').innerText = currentUser.balance.toLocaleString();
+  document.getElementById('wbal').innerText = currentUser.balance.toLocaleString();
+  document.getElementById('wbtn').disabled = currentUser.balance < 50000;
+  document.getElementById('wbtn2').disabled = currentUser.balance < 50000;
+
+  if(currentUser.paid &&!currentUser.hasTicket){
+    document.getElementById('ticketstatus').innerText = '⏳ Wait for JADA CARD to approve your payment';
+    document.getElementById('nostatus').innerText = '⏳ Wait for JADA CARD to approve your payment';
+  } else if(currentUser.hasTicket){
+    document.getElementById('ticketstatus').innerText = '✅ Ticket ready';
+    document.getElementById('nostatus').innerText = '';
+  } else {
+    document.getElementById('ticketstatus').innerText = '';
+    document.getElementById('nostatus').innerText = '';
+  }
+
+  if(currentUser.hasTicket){
+    document.getElementById('no').style.display='none';
+    document.getElementById('yes').style.display='block';
+    document.getElementById('win').innerText = '???';
+  } else {
+    document.getElementById('no').style.display='block';
+    document.getElementById('yes').style.display='none';
+  }
+}
+
+function pay(){
+  if(currentUser.paid){alert('Payment sent. Wait for JADA CARD to approve your payment.');return;}
+  currentUser.paid = true;
+  saveData();
+  alert('Payment sent. Wait for JADA CARD to approve your payment.');
+  updateUI();
+}
+
+function scratch(){
+  if(!currentUser.hasTicket) return;
+  let win = Math.random() < 0.4;
+  let amt = win? gameData.settings.winAmount : 0;
+
+  currentUser.hasTicket = false;
+  if(win){
+    currentUser.balance += amt;
+    currentUser.history.push({date:new Date().toLocaleString(), result:'WIN', amount:amt});
+    document.getElementById('res').innerHTML = '<div class="result-win"><div style="color:#00ff88;font-weight:700;margin-bottom:10px">🎉 YOU WON!</div><div class="result-amount-win">ugx '+amt.toLocaleString()+'</div></div>';
+  } else {
+    currentUser.history.push({date:new Date().toLocaleString(), result:'LOSE', amount:0});
+    document.getElementById('res').innerHTML = '<div class="result-lose">TRY AGAIN</div>';
+  }
+
+  document.getElementById('win').innerText = amt.toLocaleString();
+  document.getElementById('area').onclick = null;
+  document.getElementById('area').style.opacity = '0.5';
+
+  let idx = gameData.users.findIndex(u=>u.phone===currentUser.phone);
+  gameData.users[idx] = currentUser;
+  saveData();
+  updateUI();
+}
+
+function savePrice(){
+  gameData.settings.ticketPrice = parseInt(document.getElementById('setprice').value);
+  saveData();
+  document.getElementById('ticketprice').innerText = gameData.settings.ticketPrice.toLocaleString();
+  alert('Saved: UGX '+gameData.settings.ticketPrice.toLocaleString());
+}
+
+function saveWinAmount(){
+  gameData.settings.winAmount = parseInt(document.getElementById('setwinamount').value);
+  saveData();
+  alert('Win amount locked: UGX '+gameData.settings.winAmount.toLocaleString());
+}
+
+function loadUsers(){
+  let html = '';
+  gameData.users.forEach((u,i)=>{
+    if(u.paid){
+      html += '<div class="user-row"><div><div style="font-weight:700">'+u.name+'</div><div style="font-size:12px;color:#888">'+u.phone+'</div></div><div>';
+      if(u.hasTicket){
+        html += '<span style="color:#00ff88">Ticket issued</span>';
+      } else {
+        html += '<button class="btn" style="width:auto;padding:8px 16px;font-size:13px" onclick="issueTicket('+i+')">✓ Issue Ticket</button>';
+      }
+      html += '</div></div>';
+    }
+  });
+  document.getElementById('userlist').innerHTML = html || 'no pending users';
+}
+
+function issueTicket(i){
+  gameData.users[i].hasTicket = true;
+  gameData.users[i].paid = false;
+  if(!gameData.users[i].notifications) gameData.users[i].notifications = [];
+  gameData.users[i].notifications.push({msg:'🎉 You have a card waiting to be scratched!', time:new Date().toLocaleString(), read:false});
+
+  saveData();
+  alert('Ticket issued to '+gameData.users[i].name);
+  loadUsers();
+}
+
+function requestWithdraw(){
+  if(currentUser.balance < 50000){alert('Min withdrawal UGX 50,000');return;}
+  let amt = currentUser.balance;
+  currentUser.withdrawals.push({amount:amt, status:'pending', date:new Date().toLocaleString()});
+  currentUser.balance = 0;
+
+  let idx = gameData.users.findIndex(u=>u.phone===currentUser.phone);
+  gameData.users[idx] = currentUser;
+  saveData();
+  updateUI();
+  alert('Withdrawal request sent to JADA CARD');
+}
+
+function loadWithdrawals(){
+  let html = '';
+  let count = 0;
+  gameData.users.forEach((u,ui)=>{
+    u.withdrawals.forEach((w,wi)=>{
+      if(w.status==='pending'){
+        count++;
+        html += '<div class="user-row"><div><div style="font-weight:700">'+u.name+'</div><div style="font-size:12px;color:#888">'+u.phone+'</div><div style="font-size:13px;color:#00ff88">UGX '+w.amount.toLocaleString()+'</div></div><div><button class="btn btn-success" style="width:auto;padding:8px 12px;font-size:12px;margin:3px" onclick="approveWithdraw('+ui+','+wi+')">Approve</button><button class="btn btn-danger" style="width:auto;padding:8px 12px;font-size:12px;margin:3px" onclick="rejectWithdraw('+ui+','+wi+')">Reject</button></div></div>';
+      }
+    });
+  });
+  document.getElementById('withdrawrequests').innerHTML = html || 'none';
+  document.getElementById('withdrawbadge').style.display = count>0? 'flex' : 'none';
+  document.getElementById('withdrawbadge').innerText = count;
+}
+
+function approveWithdraw(ui,wi){
+  gameData.users[ui].withdrawals[wi].status = 'approved';
+  saveData();
+  alert('Approved');
+  loadWithdrawals();
+}
+
+function rejectWithdraw(ui,wi){
+  let amt = gameData.users[ui].withdrawals[wi].amount;
+  gameData.users[ui].balance += amt;
+  gameData.users[ui].withdrawals[wi].status = 'rejected';
+  saveData();
+  alert('Rejected - money returned');
+  loadWithdrawals();
+}
+
+function loadHistory(){
+  let html = '';
+  if(currentUser && currentUser.history.length>0){
+    currentUser.history.forEach(h=>{
+      html += '<div class="user-row"><div><div style="font-weight:700">'+h.result+'</div><div style="font-size:12px;color:#888">'+h.date+'</div></div><div style="color:#00ff88;font-weight:700">UGX '+h.amount.toLocaleString()+'</div></div>';
+    });
+  }
+  document.getElementById('historylist').innerHTML = html || 'no tickets yet';
+}
+</script>
+</body>
+</html>
