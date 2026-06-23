@@ -585,3 +585,44 @@ function loadWithdrawals(){
       if(w.status==='pending'){
         count++;
         html += '<div class="user-row"><div><div style="font-weight:
+          font-weight:700">'+u.name+'</div><div style="font-size:12px;color:#888">'+u.phone+'</div><div style="font-size:13px;color:#00ff88">UGX '+w.amount.toLocaleString()+'</div></div><div><button class="btn btn-success" style="width:auto;padding:8px 12px;font-size:12px;margin:3px" onclick="approveWithdraw('+ui+','+wi+')">Approve</button><button class="btn btn-danger" style="width:auto;padding:8px 12px;font-size:12px;margin:3px" onclick="rejectWithdraw('+ui+','+wi+')">Reject</button></div></div>';
+      }
+    });
+  });
+  document.getElementById('withdrawrequests').innerHTML = html || 'none';
+  document.getElementById('withdrawbadge').style.display = count>0? 'flex' : 'none';
+  document.getElementById('withdrawbadge').innerText = count;
+}
+
+function approveWithdraw(ui,wi){
+  gameData.users[ui].withdrawals[wi].status = 'approved';
+  if(!gameData.users[ui].notifications) gameData.users[ui].notifications = [];
+  gameData.users[ui].notifications.push({msg:'✅ JADA CARD approved your withdrawal UGX '+gameData.users[ui].withdrawals[wi].amount.toLocaleString(), time:new Date().toLocaleString(), read:false});
+  saveData();
+  alert('Withdrawal approved');
+  loadWithdrawals();
+}
+
+function rejectWithdraw(ui,wi){
+  let amt = gameData.users[ui].withdrawals[wi].amount;
+  gameData.users[ui].balance += amt;
+  gameData.users[ui].withdrawals[wi].status = 'rejected';
+  if(!gameData.users[ui].notifications) gameData.users[ui].notifications = [];
+  gameData.users[ui].notifications.push({msg:'❌ JADA CARD rejected your withdrawal. UGX '+amt.toLocaleString()+' returned to balance.', time:new Date().toLocaleString(), read:false});
+  saveData();
+  alert('Withdrawal rejected - money returned');
+  loadWithdrawals();
+}
+
+function loadHistory(){
+  let html = '';
+  if(currentUser && currentUser.history.length>0){
+    currentUser.history.slice().reverse().forEach(h=>{
+      html += '<div class="user-row"><div><div style="font-weight:700">'+h.result+'</div><div style="font-size:12px;color:#888">'+h.date+'</div></div><div style="color:#00ff88;font-weight:700">UGX '+h.amount.toLocaleString()+'</div></div>';
+    });
+  }
+  document.getElementById('historylist').innerHTML = html || 'no tickets yet';
+}
+</script>
+</body>
+</html>
