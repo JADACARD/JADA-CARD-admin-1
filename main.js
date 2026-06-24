@@ -1,11 +1,18 @@
 
-import { cards } from './cards.js';
-import { WALLET, addBalance, canClaimDaily, claimDaily } from './wallet.js';
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
 
-console.log('JADA Cards loaded:', cards.length);
-console.log('Wallet balance:', WALLET.balance);
-console.log('Can claim daily test:', canClaimDaily('test-card'));
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyB5jGFyvFxHY4mlejAvSerYkqqHq_J7YKQ",
+  authDomain: "jada-card.firebaseapp.com",
+  projectId: "jada-card",
+  storageBucket: "jada-card.firebasestorage.app",
+  messagingSenderId: "658789024478",
+  appId: "1:658789024478:web:78b85f82d87e9cdbf4b84f"
+};
 
-// Test add balance
-addBalance(100);
-console.log('After adding 100:', WALLET.balance);
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
