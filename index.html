@@ -1,1 +1,180 @@
 
+<script>
+// ========== TAP TO OPEN = IMMEDIATELY SHOW AMOUNT ==========
+window.revealCard = function(e){
+  e.preventDefault(); // Prevent double tap
+  if(!currentUser || currentUser.status!=='active') return;
+  
+  const winAmount = currentUser.winningAmount;
+  
+  // 1. ADD TO BALANCE IMMEDIATELY
+  currentUser.balance += winAmount;
+  
+  // 2. SAVE RECORD IMMEDIATELY - GOES TO USER RECORDS + DASHBOARD AREA
+  if(!currentUser.records) currentUser.records = [];
+  currentUser.records.unshift({
+    date: Date.now(),
+    amount: winAmount,
+    status: 'WIN'
+  });
+  if(currentUser.records.length > 50) currentUser.records = currentUser.records.slice(0, 50);
+  
+  // 3. RESET CARD STATUS - CARD DISAPPEARS AFTER OPENING
+  currentUser.status = 'none';
+  currentUser.winningAmount = 0;
+  saveUser();
+  
+  // 4. UPDATE FIREBASE INSTANTLY
+  updateDoc(doc(db, "customers", currentUserId), {
+    status: 'none',
+    winningAmount: 0,
+    balance: currentUser.balance,
+    records: currentUser.records
+  });
+  
+  // 5. CARD DISAPPEARS FROM DASHBOARD IMMEDIATELY
+  document.getElementById('dashboardcard').style.display = 'none';
+  document.getElementById('buyCard').style.display = 'block';
+  
+  // 6. UPDATE BALANCE + RECORDS ON DASHBOARD IMMEDIATELY
+  updateBalance();
+  displayHomeRecords();
+  displayUserRecords();
+  
+  // 7. SHOW RESULT SCREEN WITH AMOUNT
+  showScreen('scratch');
+  document.getElementById('noscratch').style.display = 'none';
+  document.getElementById('scratchcontainer').classList.add('show');
+  document.getElementById('cover').style.display = 'none';
+  document.getElementById('win').textContent = winAmount.toLocaleString();
+  
+  const resDiv = document.getElementById('res');
+  resDiv.innerHTML = `
+    <div class="result-win">
+      <div style="font-size:18px;font-weight:700">🎉 CONGRATULATIONS!</div>
+      <div class="result-amount-win">UGX ${winAmount.toLocaleString()}</div>
+      <div style="margin-top:10px">Amount added to balance + Saved to records</div>
+      <button class="btn" onclick="showScreen('home')" style="margin-top:15px">Back to Dashboard</button>
+    </div>
+  `;
+  
+  showToast(`🎉 You won UGX ${winAmount.toLocaleString()}!`);
+}
+
+// ========== WITHDRAWAL DETAILS ==========
+window.toggleWithdrawFields = function(){
+  const method = document.getElementById('withdrawmethod').value;
+  document.getElementById('mobilefields').style.display = (method==='MTN' || method===' 【entity-Airtel¦canonical_name=Airtel】') ? 'block' : 'none';
+  document.getElementById('solanafields').style.display = method==='Solana' ? 'block' : 'none';
+}
+
+window.saveWithdrawal = function(){
+  if(!currentUser) return showToast('login first');
+  
+  const method = document.getElementById('withdrawmethod').value;
+  if(!method) return showToast('select method');
+  
+  if(method==='MTN' || method===' 【entity-Airtel¦canonical_name=Airtel】'){
+    const name = document.getElementById('withdrawname').value.trim();
+    const code = document.getElementById('withdrawcountry').value;
+    const phone = document.getElementById('withdrawphone').value.trim();
+    if(!name || !code || !phone || phone.length!==9) return showToast('fill all fields. 9 digits');
+    
+    currentUser.withdrawMethod = method;
+    currentUser.withdrawName = name;
+    currentUser.withdrawPhone = code + phone;
+    currentUser.solanaAddress = '';
+    
+  } else if(method==='Solana'){
+    const address = document.getElementById('solanaaddress').value.trim();
+    if(!address || address.length < 32) return showToast('enter valid solana address');
+    
+    currentUser.withdrawMethod = 'Solana';
+    currentUser.solanaAddress = address;
+    currentUser.withdrawName = '';
+    currentUser.withdrawPhone = '';
+  }
+  
+  saveUser();
+  showToast('✅ Withdrawal details saved!');
+  showScreen('wallet');
+}
+
+// ========== WITHDRAW BUTTON 50K ACTIVE IMMEDIATELY ==========
+window.updateWithdrawButton = function(){
+  const btn = document.getElementById('withdrawbtn');
+  if(!currentUser) return;
+  
+  if(currentUser.balance >= MIN_WITHDRAW){
+    btn.disabled = false;
+    btn.textContent = `💸 Withdraw UGX ${currentUser.balance.toLocaleString()}`;
+    btn.style.background = 'linear-gradient(135deg,#00ff88,#00cc66)';
+    btn.style.color = '#000';
+  } else {
+    btn.disabled = true;
+    btn.textContent = `Min 50,000 UGX - You have ${currentUser.balance.toLocaleString()}`;
+    btn.style.background = '#333';
+    btn.style.color = '#666';
+  }
+}
+
+// ========== WITHDRAW REQUEST = ADMIN GETS INSTANTLY ON ANY DEVICE ==========
+window.withdraw = async function(){
+  if(!currentUser) return showToast('login first');
+  if(currentUser.balance < MIN_WITHDRAW) return showToast('Min withdraw 50,000 UGX');
+  if(!currentUser.withdrawMethod) return showToast('Set withdrawal details first');
+  
+  const amount = currentUser.balance;
+  let details = '';
+  let withdrawPhone = currentUser.phone;
+  let withdrawName = currentUser.name;
+  
+  if(currentUser.withdrawMethod==='MTN' || currentUser.withdrawMethod===' Airtel'){
+    details = currentUser.withdrawPhone + ' - ' + currentUser.withdrawName;
+    withdrawPhone = currentUser.withdrawPhone;
+    withdrawName = currentUser.withdrawName;
+  } else {
+    details = currentUser.solanaAddress;
+  }
+  
+  // ADMIN GETS WITHDRAWAL REQUEST + USER DETAILS INSTANTLY ON ANY PHONE
+  await addDoc(collection(db, "withdrawals"), {
+    userId: currentUserId,
+    name: withdrawName,
+    phone: withdrawPhone,
+    amount: amount,
+    method: currentUser.withdrawMethod,
+    details: details,
+    loginPhone: currentUser.phone,
+    status: "pending",
+    timestamp: serverTimestamp()
+  });
+  
+  // Reset balance
+  currentUser.balance = 0;
+  
+  // Save withdraw record
+  if(!currentUser.records) currentUser.records = [];
+  currentUser.records.unshift({
+    date: Date.now(),
+    amount: amount,
+    status: 'WITHDRAW'
+  });
+  if(currentUser.records.length > 50) currentUser.records = currentUser.records.slice(0, 50);
+  
+  saveUser();
+  updateDoc(doc(db, "customers", currentUserId), {
+    balance: 0,
+    records: currentUser.records
+  });
+  
+  updateBalance();
+  updateWithdrawButton();
+  displayUserRecords();
+  displayHomeRecords();
+  
+  showToast(`✅ Withdrawal request sent! UGX ${amount.toLocaleString()}`);
+}
+</script>
+</body>
+</html>
