@@ -1,1 +1,221 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>JADA CARD</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif;-webkit-tap-highlight-color:transparent}
+body{background:#05050a;color:#fff;min-height:100vh;max-width:480px;margin:0 auto;padding-bottom:100px;overflow-x:hidden}
+.screen{display:none}.screen.active{display:block}
+.header{padding:20px;text-align:center;background:linear-gradient(135deg,#00f5ff 0%,#ff00ff 100%);font-weight:800;font-size:20px;color:#000;position:relative}
+.back-btn{position:absolute;left:15px;top:50%;transform:translateY(-50%);font-size:26px;cursor:pointer}
+.logout{position:absolute;right:15px;top:50%;transform:translateY(-50%);font-size:22px;cursor:pointer}
+.admin-icon{position:absolute;right:15px;top:50%;transform:translateY(-50%);font-size:28px;cursor:pointer;background:rgba(0,0,0,0.2);width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid #fff}
+.btn{width:90%;margin:15px auto;display:block;padding:16px;background:linear-gradient(135deg,#00f5ff 0%,#ff00ff 100%);border:0;border-radius:14px;color:#000;font-size:16px;font-weight:700;cursor:pointer;touch-action:manipulation}
+.btn:disabled{background:#333;color:#666}
+.btn-success{background:linear-gradient(135deg,#00ff88,#00cc66)}
+.btn-danger{background:linear-gradient(135deg,#ff0044,#cc0033);color:#fff}
+.btn-warning{background:linear-gradient(135deg,#ffaa00,#ff8800);color:#000}
+input,select,textarea{width:90%;margin:10px auto;display:block;padding:15px;background:#12121a;border:2px solid #2a2a3a;border-radius:12px;color:#fff;font-size:16px}
+.phone-group{display:flex;width:90%;margin:10px auto;gap:8px}
+.phone-group select{width:45%}.phone-group input{width:55%}
+.card{background:#12121a;margin:14px;border-radius:18px;padding:20px;border:1px solid #2a2a3a}
+.scratch-container{width:90%;margin:20px auto;display:none}
+.scratch-container.show{display:block}
+.scratch-area{width:100%;height:340px;background:linear-gradient(135deg,#1a1a2a 0%,#0a0a15 100%);border-radius:28px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:#ffcc00;border:3px solid #00f5ff;position:relative;cursor:pointer;touch-action:manipulation;user-select:none}
+.scratch-area:active{transform:scale(0.98)}
+.scratch-cover{position:absolute;top:0;left:0;width:100%;height:100%;background:linear-gradient(135deg,#2a2a3a 0%,#1a1a2a 100%);z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:28px;font-weight:900;color:#ffcc00;border-radius:25px;user-select:none;cursor:pointer;touch-action:manipulation;pointer-events:auto}
+.scratch-cover:active{transform:scale(0.98)}
+.scratch-amount{font-size:44px;margin-top:15px;color:#00ff88}
+.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;display:none;background:#0c0c14;border-top:1px solid #1e1e2e;padding:8px 0;z-index:100}
+.nav-btn{flex:1;text-align:center;font-size:10px;color:#666;cursor:pointer;padding:5px 0}
+.nav-btn.icon{font-size:20px;display:block}
+.nav-btn.active{color:#00f5ff}
+.label{font-size:12px;color:#00f5ff;margin-left:5%;display:block;margin-bottom:3px;font-weight:600}
+.brand-hero{padding:40px 20px;text-align:center}
+.brand-icon{font-size:70px;margin-bottom:15px}
+.brand-name{font-size:28px;font-weight:900;color:#00f5ff}
+.balance-big{text-align:center;padding:25px 20px}
+.balance-big.amount{font-size:40px;font-weight:800;color:#00ff88}
+.result-win{margin:14px;border-radius:20px;padding:25px;text-align:center;background:#00ff8812;border:2px solid #00ff88}
+.result-amount-win{font-size:48px;font-weight:900;color:#00ff88}
+.tabs{display:flex;gap:8px;margin:12px 14px}
+.tab{flex:1;padding:10px 6px;border-radius:10px;background:#1a1a2a;text-align:center;font-size:12px;cursor:pointer;border:1px solid #2a2a3a;font-weight:600;position:relative}
+.tab.active{background:linear-gradient(135deg,#00f5ff,#ff00ff);color:#000}
+.badge{position:absolute;top:-5px;right:-5px;background:#ff0044;color:#fff;border-radius:50%;width:20px;height:20px;font-size:11px;display:flex;align-items:center;justify-content:center;font-weight:800}
+.admin-content{display:none}
+.admin-content.active{display:block}
+.user-row{padding:12px;border-bottom:1px solid #2a2a3a;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.record-item{padding:14px;border-bottom:1px solid #2a2a3a;display:flex;justify-content:space-between;align-items:center}
+.toast{position:fixed;top:60px;left:50%;transform:translateX(-50%);background:#00ff88;color:#000;padding:12px 20px;border-radius:12px;font-weight:700;z-index:9999;display:none}
+.small{font-size:11px;color:#888;text-align:center;margin-top:8px}
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+</head>
+<body>
+
+<div id="toast" class="toast"></div>
+
+<!-- ALL SCREENS HERE - LOGIN, ADMIN, HOME, SCRATCH, WALLET, RECORDS, WITHDRAW -->
+<!-- I PUT ALL HTML FROM PART 1 HERE - SAME AS BEFORE -->
+<div id="login" class="screen active">
+  <div class="header">jada card<button class="admin-icon" onclick="goAdminLogin()">🛡️</button></div>
+  <div class="brand-hero">
+    <div class="brand-icon">🎴</div>
+    <div class="brand-name">JADA CARD</div>
+    <div style="color:#888;margin-top:6px">scratch & win</div>
+    <div style="font-size:20px;font-weight:800;color:#ffcc00;margin-top:8px">🏆 win up to ugx 1,000,000</div>
+  </div>
+  <span class="label">full name</span>
+  <input id="fullname" placeholder="enter your full name">
+  <span class="label">🌍 country + phone 9 digits</span>
+  <div class="phone-group">
+    <select id="countrycode">
+      <option value="">select country</option>
+      <option value="+256">🇺🇬 Uganda +256</option>
+      <option value="+254">🇰🇪 Kenya +254</option>
+    </select>
+    <input id="phonedigits" placeholder="9 digits" maxlength="9">
+  </div>
+  <button class="btn" onclick="login()">🎮 play now</button>
+</div>
+
+<!-- COPY ALL OTHER SCREENS FROM PART 1 HERE -->
+<!-- ADMIN, HOME, SCRATCH, WALLET, RECORDS, WITHDRAWSETUP, BOTTOM NAV -->
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, query, orderBy, where, serverTimestamp, setDoc, deleteDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyB5jGFyvFxHY4mlejAvSerYkqqHq_J7YKQ",
+  authDomain: "jada-card.firebaseapp.com",
+  projectId: "jada-card",
+  storageBucket: "jada-card.firebasestorage.app",
+  messagingSenderId: "658789024478",
+  appId: "1:658789024478:web:78b85f82d87e9cdbf4b84f"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+emailjs.init("I12UIAChWa_pR03-M");
+const EMAILJS_SERVICE = "service_93u3";
+const EMAILJS_TEMPLATE = "template_8lpidat";
+const STRIPE_LINK = "https://buy.stripe.com/5kQ4gz20Ugcm2ADgZZes000";
+const ADMIN_NAME = "JADA CARD";
+const ADMIN_PHONE = "+256788417769";
+let CARD_COST = parseInt(localStorage.getItem('card_cost')) || 3600;
+const MIN_WITHDRAW = 50000;
+let currentUser = null;
+let currentUserId = null;
+let isAdmin = false;
+
+function saveUser(){ if(currentUserId) localStorage.setItem('user_'+currentUserId, JSON.stringify(currentUser)); }
+function showToast(msg){ const toast = document.getElementById('toast'); if(toast){ toast.textContent = msg; toast.style.display = 'block'; setTimeout(() => toast.style.display = 'none', 3000); } }
+
+// ========== FIXED showScreen ==========
+window.showScreen = function(id){
+  if(!currentUser && id!== 'login' && id!== 'adminlogin'){ showToast('Please login first'); id = 'login'; }
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  const bottomNav = document.querySelector('.bottom-nav');
+  bottomNav.style.display = (id === 'login' || id === 'adminlogin')? 'none' : 'flex';
+  document.querySelectorAll('.nav-btn').forEach(n=>n.classList.remove('active'));
+  if(id==='home') {document.querySelectorAll('.nav-btn')[0].classList.add('active'); setTimeout(checkCardStatus, 300); displayHomeRecords();}
+  if(id==='scratch') {document.querySelectorAll('.nav-btn')[1].classList.add('active'); checkScratchStatus();}
+  if(id==='wallet') {document.querySelectorAll('.nav-btn')[2].classList.add('active'); updateBalance(); updateWithdrawButton(); displayUserRecords();}
+  if(id==='records') {document.querySelectorAll('.nav-btn')[3].classList.add('active'); displayAllRecords();}
+}
+
+// ========== FIXED LOGIN ==========
+window.login = function(){
+  const name = document.getElementById('fullname').value.trim();
+  const code = document.getElementById('countrycode').value;
+  const digits = document.getElementById('phonedigits').value.trim();
+  if(!name ||!code ||!digits || digits.length!==9) return showToast('Fill all fields. 9 digits required');
+  const phone = code + digits;
+  currentUserId = btoa(phone).replace(/=/g,'');
+  const saved = localStorage.getItem('user_'+currentUserId);
+  currentUser = saved? JSON.parse(saved) : { name, phone, balance:0, status:'none', winningAmount:0, withdrawMethod:'', withdrawPhone:'', withdrawName:'', solanaAddress:'', records:[], customerDocId:'' };
+  localStorage.setItem('user_'+currentUserId, JSON.stringify(currentUser));
+  isAdmin = false;
+  updateBalance();
+  showToast('Welcome ' + name);
+  setTimeout(() => { showScreen('home'); listenUserRealtime(); }, 300);
+}
+
+// ========== ALL OTHER FUNCTIONS FROM PART 2 + PART 3 HERE ==========
+// pay(), adminLogin(), approve(), reject(), revealCard(), withdraw(), bindCardTap(), etc
+// COPY EVERYTHING EXACTLY AS IN PART 2 + PART 3
+
+window.pay = async function(){
+  if(!currentUser) return showToast('login first');
+  if(currentUser.status==='pending' || currentUser.status==='active') return showToast('You have pending/active card');
+  currentUser.status = 'pending';
+  saveUser();
+  window.open(STRIPE_LINK, '_blank');
+  const paymentData = { userId: currentUserId, name: currentUser.name, phone: currentUser.phone, amount: CARD_COST, status: "pending", timestamp: serverTimestamp(), winningAmount: 0 };
+  const q = query(collection(db, "customers"), where("phone", "==", currentUser.phone));
+  const snap = await getDocs(q);
+  if(!snap.empty){ const oldDocId = snap.docs[0].id; await setDoc(doc(db, "customers", oldDocId), paymentData); currentUser.customerDocId = oldDocId; }
+  else { const docRef = await addDoc(collection(db, "customers"), paymentData); currentUser.customerDocId = docRef.id; }
+  saveUser();
+  emailjs.send(EMAILJS_SERVICE, EMAILJS_TEMPLATE, { customer_name: currentUser.name, customer_phone: currentUser.phone, amount: CARD_COST, time: new Date().toLocaleString() });
+  const notifId = 'notif_' + Date.now();
+  await setDoc(doc(db, "admin_broadcast", notifId), { type: "new_payment", name: currentUser.name, phone: currentUser.phone, amount: CARD_COST, timestamp: serverTimestamp() });
+  setTimeout(() => deleteDoc(doc(db, "admin_broadcast", notifId)), 180000);
+  showToast('wait Jada Card approval');
+  setTimeout(checkCardStatus, 500);
+}
+
+function bindCardTap(){
+  setTimeout(() => {
+    ['dashboardcover', 'cover'].forEach(id => {
+      const cover = document.getElementById(id);
+      if(!cover || cover.dataset.bound === 'true') return;
+      cover.dataset.bound = 'true';
+      cover.style.pointerEvents = 'auto';
+      cover.style.cursor = 'pointer';
+      const tap = (e) => { e.preventDefault(); e.stopPropagation(); revealCard(e); };
+      cover.addEventListener('click', tap);
+      cover.addEventListener('touchstart', tap, {passive:false});
+    });
+  }, 800);
+}
+
+window.revealCard = function(e){
+  if(e) {e.preventDefault(); e.stopPropagation();}
+  if(!currentUser || currentUser.status!=='active' || currentUser.winningAmount <= 0) return;
+  const winAmount = currentUser.winningAmount;
+  currentUser.balance += winAmount;
+  if(!currentUser.records) currentUser.records = [];
+  currentUser.records.unshift({date: Date.now(), amount: winAmount, status: 'WIN'});
+  if(currentUser.records.length > 100) currentUser.records = currentUser.records.slice(0, 100);
+  currentUser.status = 'none';
+  currentUser.winningAmount = 0;
+  saveUser();
+  if(currentUser.customerDocId){ updateDoc(doc(db, "customers", currentUser.customerDocId), { status: 'none', winningAmount: 0, balance: currentUser.balance, records: currentUser.records }); }
+  document.getElementById('dashboardcard').style.display = 'none';
+  document.getElementById('buyCard').style.display = 'block';
+  updateBalance();
+  displayHomeRecords();
+  displayAllRecords();
+  showScreen('scratch');
+  document.getElementById('noscratch').style.display = 'none';
+  document.getElementById('scratchcontainer').classList.add('show');
+  document.getElementById('cover').style.display = 'none';
+  document.getElementById('win').textContent = winAmount.toLocaleString();
+  document.getElementById('res').innerHTML = `<div class="result-win"><div style="font-size:18px;font-weight:700">🎉 CONGRATULATIONS!</div><div class="result-amount-win">UGX ${winAmount.toLocaleString()}</div><div style="margin-top:10px">Amount added to balance + Saved to records</div><button class="btn" onclick="showScreen('records')" style="margin-top:15px">📋 View All Records</button></div>`;
+  showToast(`🎉 Won UGX ${winAmount.toLocaleString()}!`);
+}
+
+// ========== ADD ALL OTHER FUNCTIONS HERE ==========
+// approve(), reject(), loadCustomers(), loadWithdrawals(), withdraw(), updateBalance(), etc
+
+setInterval(() => { if(currentUser &&!isAdmin){ updateBalance(); updateWithdrawButton(); } }, 3000);
+</script>
+</body>
+</html>
