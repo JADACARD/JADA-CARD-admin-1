@@ -1,1 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>JADA CARD v20</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif;-webkit-tap-highlight-color:transparent}
+body{background:#05050a;color:#fff;min-height:100vh;max-width:480px;margin:0 auto;padding-bottom:80px}
+.screen{display:none}.screen.active{display:block}
+.header{padding:16px;text-align:center;background:linear-gradient(135deg,#00f5ff 0%,#ff00ff 100%);font-weight:800;font-size:17px;color:#000;position:relative}
+.back-btn{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:22px;cursor:pointer}
+.logout{position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:18px;cursor:pointer}
+.admin-icon{position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:22px;cursor:pointer;background:rgba(0,0,0,0.2);width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid #fff}
+.btn{width:94%;margin:10px auto;display:block;padding:13px;background:linear-gradient(135deg,#00f5ff 0%,#ff00ff 100%);border:0;border-radius:10px;color:#000;font-size:14px;font-weight:700;cursor:pointer}
+.btn:disabled{background:#333;color:#666}
+.btn-success{background:linear-gradient(135deg,#00ff88,#00cc66)}
+.btn-danger{background:linear-gradient(135deg,#ff0044,#cc0033);color:#fff}
+.btn-warning{background:linear-gradient(135deg,#ffaa00,#ff8800);color:#000}
+input,select,textarea{width:94%;margin:7px auto;display:block;padding:12px;background:#12121a;border:1px solid #2a2a3a;border-radius:8px;color:#fff;font-size:14px}
+.phone-group{display:flex;width:94%;margin:7px auto;gap:5px}
+.phone-group select{width:42%}.phone-group input{width:58%}
+.card{background:#12121a;margin:10px;border-radius:14px;padding:14px;border:1px solid #2a2a3a}
+.scratch-container{width:94%;margin:14px auto;display:none}
+.scratch-container.show{display:block}
+.scratch-area{width:100%;height:300px;background:#1a1a2a;border-radius:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:#ffcc00;border:2px solid #00f5ff;position:relative}
+.scratch-cover{position:absolute;top:0;left:0;width:100%;height:100%;background:#2a2a3a;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:20px;font-weight:800;color:#888;border-radius:18px}
+.scratch-cover.icon{font-size:50px;margin-bottom:10px}
+.scratch-amount{font-size:36px;margin-top:10px;color:#00ff88}
+.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;display:flex;background:#0c0c14;border-top:1px solid #1e1e2e;padding:5px 0;z-index:100}
+.nav-btn{flex:1;text-align:center;font-size:9px;color:#666;cursor:pointer;padding:3px 0}
+.nav-btn.icon{font-size:16px;display:block}
+.nav-btn.active{color:#00f5ff}
+.label{font-size:10px;color:#00f5ff;margin-left:3%;display:block;margin-bottom:1px;font-weight:600}
+.balance-big{text-align:center;padding:18px 14px}
+.balance-big.amount{font-size:32px;font-weight:800;color:#00ff88}
+.tabs{display:flex;gap:5px;margin:8px 10px}
+.tab{flex:1;padding:7px 3px;border-radius:7px;background:#1a1a2a;text-align:center;font-size:10px;cursor:pointer;border:1px solid #2a2a3a;font-weight:600}
+.tab.active{background:linear-gradient(135deg,#00f5ff,#ff00ff);color:#000}
+.badge{position:absolute;top:-3px;right:-3px;background:#ff0044;color:#fff;border-radius:50%;width:16px;height:16px;font-size:9px;display:flex;align-items:center;justify-content:center;font-weight:800}
+.admin-content{display:none}
+.admin-content.active{display:block}
+.small{font-size:9px;color:#666;margin-top:3px;text-align:center}
+.user-row{padding:8px;border-bottom:1px solid #2a2a3a;display:flex;justify-content:space-between;align-items:center;gap:5px}
+.history-item{padding:8px;border-bottom:1px solid #2a2a3a;display:flex;justify-content:space-between}
+.record-win{color:#00ff88;font-weight:800}
+.record-date{font-size:8px;color:#666}
+.locked{background:#ff0044!important;color:#fff!important}
+.win-popup{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#12121a;border:2px solid #00ff88;border-radius:14px;padding:20px;z-index:9999;text-align:center;display:none;max-width:300px;width:90%}
+.win-popup.show{display:block}
+.overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:9998;display:none}
+.overlay.show{display:block}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+</head>
+<body>
+
+<div class="overlay" id="overlay"></div>
+<div class="win-popup" id="winpopup">
+  <div style="font-size:36px;margin-bottom:10px">🎉</div>
+  <div style="font-size:18px;font-weight:800;margin-bottom:6px">YOU WON!</div>
+  <div style="font-size:12px;color:#888;margin-bottom:10px">Amount</div>
+  <div class="scratch-amount" id="popupamount">UGX 0</div>
+  <div style="font-size:10px;color:#666;margin-top:10px">Card closes in 2 minutes</div>
+  <button class="btn btn-success" onclick="closePopup()" style="margin-top:10px">OK</button>
+</div>
+
+<div id="login" class="screen active">
+  <div class="header">jada card v20<button class="admin-icon" onclick="goAdminLogin()">🛡️</button></div>
+  <div style="padding:25px 14px;text-align:center"><div style="font-size:45px;margin-bottom:10px">🎴</div><div style="font-size:22px;font-weight:900;color:#00f5ff">JADA CARD</div><div style="color:#888;font-size:11px;margin-top:3px">scratch & win</div></div>
+  <span class="label">full name</span><input id="fullname" placeholder="enter name">
+  <span class="label">🌍 country + 9 digits</span>
+  <div class="phone-group">
+    <select id="countrycode"><option value="">country</option><option value="+256">🇺🇬 +256</option><option value="+254">🇰🇪 +254</option><option value="+255">🇹🇿 +255</option><option value="+250">🇷🇼 +250</option><option value="+257">🇧🇮 +257</option><option value="+27">🇿🇦 +27</option><option value="+249">🇸🇩 +249</option><option value="+243">🇨🇩 +243</option><option value="+234">🇳🇬 +234</option><option value="+233">🇬🇭 +233</option><option value="+971">🇦🇪 +971</option><option value="+966">🇸🇦 +966</option><option value="+974">🇶🇦 +974</option><option value="+1">🇺🇸 +1</option><option value="+44">🇬🇧 +44</option><option value="+91">🇮🇳 +91</option></select>
+    <input id="phonedigits" placeholder="9 digits" type="tel" maxlength="9">
+  </div>
+  <button class="btn" onclick="login()">🎮 play</button>
+</div>
+
+<div id="adminlogin" class="screen">
+  <div class="header"><span class="back-btn" onclick="showScreen('login')">←</span>admin</div>
+  <div style="text-align:center;padding:35px;font-size:45px">🛡️</div>
+  <span class="label">admin name</span><input id="adminname" placeholder="JADA CARD">
+  <span class="label">🌍 country code</span>
+  <div class="phone-group">
+    <select id="admincountry"><option value="+256">🇺🇬 +256</option></select>
+    <input id="adminphonedigits" placeholder="9 digits" maxlength="9">
+  </div>
+  <button class="btn" onclick="adminLogin()">login</button>
+</div>
+
+<div id="adminpanel" class="screen">
+  <div class="header"><span class="back-btn" onclick="showScreen('login')">←</span>admin<span class="logout" onclick="logout()">🚪</span></div>
+  <div class="tabs">
+    <div class="tab active" onclick="adminTab('users',this)">👥 payers <span id="userbadge" class="badge" style="display:none">0</span></div>
+    <div class="tab" onclick="adminTab('settings',this)">⚙️ settings</div>
+  </div>
+  <div id="admin-users" class="admin-content active">
+    <div class="card">
+      <button class="btn btn-danger" onclick="clearSystem()">🗑️ REFRESH</button>
+      <div class="small">clear all data</div>
+      <div id="userlist" style="color:#666;text-align:center;margin-top:10px">loading...</div>
+    </div>
+  </div>
+  <div id="admin-settings" class="admin-content">
+    <div class="card">
+      <span class="label">Card cost</span><input id="cardcost" value="3600" readonly style="background:#1a1a2a;color:#888">
+      <span class="label">Win amount</span><input id="winamount" type="number" value="50000" min="0" max="1000000">
+      <button id="lockbtn" class="btn btn-warning" onclick="toggleLock()">🔓 Unlock</button>
+      <div class="small" id="lockstatus">Unlocked</div>
+      <button class="btn btn-success" onclick="saveSettings()">💾 Save & Lock</button>
+    </div>
+  </div>
+</div>
+
+<div id="home" class="screen">
+  <div class="header">dashboard<span class="logout" onclick="logout()">🚪</span></div>
+  <div class="balance-big"><div style="color:#888;font-size:11px">balance</div><div class="balance-big amount">ugx <span id="balance">0</span></div></div>
+  <div class="card"><div style="font-weight:700;margin-bottom:5px">🎴 buy card</div><div id="nostatus" style="font-size:10px;color:#ffaa00;margin-bottom:7px"></div><button class="btn btn-warning" onclick="pay()">💳 Pay UGX 3600</button></div>
+</div>
+
+<div id="scratch" class="screen">
+  <div class="header"><span class="back-btn" onclick="showScreen('home')">←</span>card<span class="logout" onclick="logout()">🚪</span></div>
+  <div class="scratch-container" id="scratchcontainer">
+    <div class="scratch-area" id="area">
+      <div class="scratch-cover" id="cover"><div class="icon">🎴</div><div>OPENING...</div></div>
+      <div><div>WINNER!</div><div class="scratch-amount">ugx <span id="win">0</span></div></div>
+    </div>
+  </div>
+</div>
+<div id="history" class="screen">
+  <div class="header"><span class="back-btn" onclick="showScreen('home')">←</span>history<span class="logout" onclick="logout()">🚪</span></div>
+  <div class="card"><div style="font-weight:700;margin-bottom:10px">📋 wins</div><div id="historylist" style="color:#666;text-align:center">none</div></div>
+</div>
+
+<div id="wallet" class="screen">
+  <div class="header"><span class="back-btn" onclick="showScreen('home')">←</span>wallet<span class="logout" onclick="logout()">🚪</span></div>
+  <div class="balance-big"><div style="color:#888;font-size:11px">balance</div><div class="balance-big amount">ugx <span id="wbal">0</span></div></div>
+  <div class="card"><button class="btn btn-warning" onclick="showScreen('withdrawsetup')">⚙️ withdraw</button><button id="withdrawbtn" class="btn btn-success" onclick="withdraw()" disabled>💸 min 50k</button></div>
+</div>
+
+<div id="withdrawsetup" class="screen">
+  <div class="header"><span class="back-btn" onclick="showScreen('wallet')">←</span>withdraw<span class="logout" onclick="logout()">🚪</span></div>
+  <div class="card">
+    <span class="label">method</span>
+    <select id="withdrawmethod" onchange="toggleWithdrawFields()"><option value="">select</option><option value="MTN">MTN</option><option value="Airtel">Airtel</option><option value="Solana">Solana</option></select>
+    <div id="mobilefields" style="display:none"><span class="label">phone</span><div class="phone-group"><select id="withdrawcountry"><option value="+256">+256</option></select><input id="withdrawphone" placeholder="9 digits" maxlength="9"></div></div>
+    <div id="solanafields" style="display:none"><span class="label">solana</span><textarea id="solanaaddress"></textarea></div>
+    <button class="btn btn-success" onclick="saveWithdrawal()">💾 save</button>
+  </div>
+</div>
+
+<div class="bottom-nav">
+  <div class="nav-btn active" onclick="showScreen('home')"><span class="nav-btn icon">🏠</span>home</div>
+  <div class="nav-btn" onclick="showScreen('scratch')"><span class="nav-btn icon">🎴</span>card</div>
+  <div class="nav-btn" onclick="showScreen('history')"><span class="nav-btn icon">📋</span>history</div>
+  <div class="nav-btn" onclick="showScreen('wallet')"><span class="nav-btn icon">💰</span>wallet</div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, addDoc, onSnapshot, doc, getDoc, setDoc, deleteDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig = {apiKey:"AIzaSyB5jGFyvFxHY4mlejAvSerYkqqHq_J7YKQ",authDomain:"jada-card.firebaseapp.com",projectId:"jada-card",storageBucket:"jada-card.firebasestorage.app",messagingSenderId:"658789024478",appId:"1:658789024478:web:78b85f82d87e9cdbf4b84f"};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+emailjs.init("I12UIAChWa_pR03-M");
+const ADMIN_NAME="JADA CARD"; const ADMIN_PHONE="+256788417769";
+const STRIPE_LINK="https://buy.stripe.com/5kQ4gz20Ugcm2ADgZZes000";
+const CARD_COST=3600; const MIN_WITHDRAW=50000; const CARD_TIME=120000;
+
+let currentUser=null; let currentUserId=null; let GLOBAL_WIN_AMOUNT=50000; let WIN_LOCKED=false; let cardTimer=null;
+
+window.showScreen=function(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.nav-btn').forEach(n=>n.classList.remove('active'));if(id==='home')document.querySelectorAll('.nav-btn')[0].classList.add('active');if(id==='scratch')document.querySelectorAll('.nav-btn')[1].classList.add('active');if(id==='history')document.querySelectorAll('.nav-btn')[2].classList.add('active');if(id==='wallet')document.querySelectorAll('.nav-btn')[3].classList.add('active');if(id==='home')checkStatus();if(id==='wallet')updateBalance();if(id==='history')loadHistory()}
+
+window.login=function(){const name=document.getElementById('fullname').value.trim();const code=document.getElementById('countrycode').value;const digits=document.getElementById('phonedigits').value.trim();if(!name||!code||digits.length!==9)return alert('fill all');const phone=code+digits;currentUserId=btoa(phone).replace(/=/g,'');const saved=localStorage.getItem('user_'+currentUserId);currentUser=saved?JSON.parse(saved):{name,phone,balance:0,history:[]};localStorage.setItem('user_'+currentUserId,JSON.stringify(currentUser));loadSettings();updateBalance();showScreen('home')}
+
+window.goAdminLogin=function(){showScreen('adminlogin')};window.adminLogin=function(){const name=document.getElementById('adminname').value.trim();const code=document.getElementById('admincountry').value;const digits=document.getElementById('adminphonedigits').value.trim();if(name===ADMIN_NAME&&code+digits===ADMIN_PHONE){loadSettings();showScreen('adminpanel');loadPayers()}else alert('invalid')};window.logout=function(){currentUser=null;currentUserId=null;clearTimeout(cardTimer);showScreen('login')}
+
+async function loadSettings(){const snap=await getDoc(doc(db,"settings","global"));if(snap.exists()){GLOBAL_WIN_AMOUNT=snap.data().winAmount||50000;WIN_LOCKED=snap.data().locked||false}document.getElementById('winamount').value=GLOBAL_WIN_AMOUNT;updateLockUI()}
+
+window.toggleLock=async function(){WIN_LOCKED=!WIN_LOCKED;await setDoc(doc(db,"settings","global"),{winAmount:GLOBAL_WIN_AMOUNT,locked:WIN_LOCKED});updateLockUI()}
+
+function updateLockUI(){const btn=document.getElementById('lockbtn');const status=document.getElementById('lockstatus');const input=document.getElementById('winamount');if(WIN_LOCKED){btn.textContent='🔒 Locked';btn.classList.add('locked');status.textContent='Locked: UGX '+GLOBAL_WIN_AMOUNT.toLocaleString();input.disabled=true}else{btn.textContent='🔓 Unlock';btn.classList.remove('locked');status.textContent='Unlocked';input.disabled=false}}
+
+window.saveSettings=async function(){if(WIN_LOCKED)return alert('unlock first');const amount=parseInt(document.getElementById('winamount').value);if(isNaN(amount)||amount<0||amount>1000000)return alert('0-1M');GLOBAL_WIN_AMOUNT=amount;WIN_LOCKED=true;await setDoc(doc(db,"settings","global"),{winAmount:GLOBAL_WIN_AMOUNT,locked:WIN_LOCKED});updateLockUI();alert('saved')}
+
+window.clearSystem=async function(){if(!confirm('delete all?'))return;const snap=await getDocs(collection(db,"payers"));const del=[];snap.forEach(d=>del.push(deleteDoc(doc(db,"payers",d.id))));await Promise.all(del);await setDoc(doc(db,"settings","global"),{winAmount:50000,locked:false});localStorage.clear();alert('cleared');loadPayers()}
+
+window.adminTab=function(tab,el){document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.admin-content').forEach(c=>c.classList.remove('active'));el.classList.add('active');document.getElementById('admin-'+tab).classList.add('active');if(tab==='users')loadPayers()}
+
+// FIXED PAY: Stripe opens + Card shows instantly
+window.pay=async function(){
+  if(!currentUser)return alert('login');
+  const cardNumber='JC'+Date.now().toString().slice(-6);
+
+  // Save to Firebase first
+  await addDoc(collection(db,"payers"),{userId:currentUserId,name:currentUser.name,phone:currentUser.phone,card:cardNumber,amount:CARD_COST,win:GLOBAL_WIN_AMOUNT,time:Date.now()});
+
+  // OPEN STRIPE - use location.href so popup blocker can't block it
+  window.location.href = STRIPE_LINK;
+
+  // SHOW CARD INSTANTLY - don't wait for Stripe
+  setTimeout(()=>openCard(cardNumber),300);
+}
+
+function openCard(cardNumber){
+  showScreen('scratch');
+  const container=document.getElementById('scratchcontainer');
+  const cover=document.getElementById('cover');
+  container.classList.add('show');
+
+  setTimeout(()=>{
+    cover.style.display='none';
+    document.getElementById('win').textContent=GLOBAL_WIN_AMOUNT.toLocaleString();
+    document.getElementById('popupamount').textContent='UGX '+GLOBAL_WIN_AMOUNT.toLocaleString();
+    document.getElementById('overlay').classList.add('show');
+    document.getElementById('winpopup').classList.add('show');
+
+    currentUser.balance+=GLOBAL_WIN_AMOUNT;
+    currentUser.history.unshift({amount:GLOBAL_WIN_AMOUNT,date:new Date().toLocaleString(),card:cardNumber});
+    saveUser();
+    updateBalance();
+
+    clearTimeout(cardTimer);
+    cardTimer=setTimeout(()=>{closePopup();showScreen('home')},CARD_TIME);
+  },400);
+}
+
+window.closePopup=function(){document.getElementById('overlay').classList.remove('show');document.getElementById('winpopup').classList.remove('show')}
+
+function loadPayers(){onSnapshot(collection(db,"payers"),snap=>{const payers=[];snap.forEach(d=>payers.push(d.data()));const list=document.getElementById('userlist');const badge=document.getElementById('userbadge');if(!payers.length){list.innerHTML='no payers';badge.style.display='none';return}badge.textContent=payers.length;badge.style.display='flex';list.innerHTML=payers.map(c=>`<div class="user-row"><div><div style="font-weight:700;font-size:12px">${c.name}</div><div style="font-size:10px;color:#888">${c.phone}</div><div style="font-size:9px;color:#00ff88">Won UGX ${c.win.toLocaleString()}</div></div></div>`).join('')})}
+
+function updateBalance(){if(currentUser){document.getElementById('balance').textContent=currentUser.balance.toLocaleString();document.getElementById('wbal').textContent=currentUser.balance.toLocaleString();const btn=document.getElementById('withdrawbtn');btn.disabled=currentUser.balance<MIN_WITHDRAW;btn.textContent=currentUser.balance>=MIN_WITHDRAW?'💸 withdraw':'min 50k'}}
+
+function checkStatus(){if(currentUser){document.getElementById('nostatus').innerHTML='Tap Pay → Stripe opens → Card shows win UGX '+GLOBAL_WIN_AMOUNT.toLocaleString()+' → closes 2min'}}
+
+function loadHistory(){if(!currentUser||!currentUser.history.length){document.getElementById('historylist').innerHTML='no wins';return}document.getElementById('historylist').innerHTML=currentUser.history.map(h=>`<div class="history-item"><div><div style="font-weight:700;font-size:11px">${h.card}</div><div class="record-date">${h.date}</div></div><div class="record-win">+UGX ${h.amount.toLocaleString()}</div></div>`).join('')}
+
+window.toggleWithdrawFields=function(){const m=document.getElementById('withdrawmethod').value;document.getElementById('mobilefields').style.display=(m==='MTN'||m==='Airtel')?'block':'none';document.getElementById('solanafields').style.display=m==='Solana'?'block':'none'}
+
+window.saveWithdrawal=function(){const m=document.getElementById('withdrawmethod').value;if(!m)return alert('select');let p='',s='';if(m==='MTN'||m==='Airtel'){const c=document.getElementById('withdrawcountry').value;const d=document.getElementById('withdrawphone').value.trim();if(d.length!==9)return alert('9 digits');p=c+d}else s=document.getElementById('solanaaddress').value.trim();currentUser.withdrawMethod=m;currentUser.withdrawPhone=p;currentUser.solanaAddress=s;saveUser();alert('saved');showScreen('wallet')}
+
+window.withdraw=function(){if(currentUser.balance<MIN_WITHDRAW)return alert('min 50k');alert('request sent')}
+
+function saveUser(){if(currentUser&&currentUserId)localStorage.setItem('user_'+currentUserId,JSON.stringify(currentUser))}
+</script>
+</body>
+</html>
 
