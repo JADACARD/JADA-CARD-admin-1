@@ -1,1 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>SITUKA INVESTMENTS</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Arial,sans-serif;-webkit-tap-highlight-color:transparent}
+body{background:linear-gradient(135deg,#0a0a1a 0%,#1a1a2e 100%);color:#fff;min-height:100vh;max-width:480px;margin:0 auto;padding-bottom:90px}
+.screen{display:none}.screen.active{display:block;animation:fadeIn 0.3s}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.header{padding:20px;text-align:center;background:linear-gradient(135deg,#00d4ff 0%,#7b2cbf 100%);font-weight:900;font-size:22px;color:#fff;position:relative;box-shadow:0 4px 20px rgba(0,212,255,0.3)}
+.back-btn{position:absolute;left:15px;top:50%;transform:translateY(-50%);font-size:26px;cursor:pointer}
+.logout{position:absolute;right:15px;top:50%;transform:translateY(-50%);font-size:20px;cursor:pointer}
+.admin-icon{position:absolute;right:15px;top:50%;transform:translateY(-50%);font-size:24px;cursor:pointer;background:rgba(255,255,255,0.2);width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.btn{width:90%;margin:12px auto;display:block;padding:16px;background:linear-gradient(135deg,#00d4ff 0%,#7b2cbf 100%);border:0;border-radius:14px;color:#fff;font-size:16px;font-weight:700;cursor:pointer;box-shadow:0 4px 15px rgba(0,212,255,0.3)}
+.btn-outline{background:transparent;border:2px solid #00d4ff;color:#00d4ff}
+.btn-success{background:linear-gradient(135deg,#00ff88,#00cc66)}
+.btn:disabled{background:#333;color:#666}
+input,select,textarea{width:90%;margin:10px auto;display:block;padding:15px;background:#1e1e2e;border:2px solid #2a2a3a;border-radius:12px;color:#fff;font-size:16px}
+.label{font-size:12px;color:#00d4ff;margin-left:5%;display:block;margin-bottom:5px;font-weight:600}
+.card{background:#1e1e2e;margin:14px;border-radius:20px;padding:20px;border:1px solid #2a2a3a;box-shadow:0 4px 20px rgba(0,0,0,0.3)}
+.invest-card{background:linear-gradient(135deg,#1e1e2e 0%,#25253a 100%);border:2px solid #00d4ff;margin:14px;border-radius:20px;padding:20px;text-align:center;cursor:pointer;transition:0.3s}
+.invest-card.selected{border-color:#00ff88;background:linear-gradient(135deg,#00ff8820 0%,#00cc6620 100%)}
+.payment-btn{flex:1;padding:18px;border-radius:16px;text-align:center;font-weight:800;cursor:pointer;border:3px solid transparent;font-size:16px;transition:0.2s}
+.payment-btn.selected{border-color:#00ff88;box-shadow:0 0 15px rgba(0,255,136,0.5)}
+.invest-amount{font-size:32px;font-weight:900;color:#00ff88}
+.invest-return{font-size:18px;color:#00d4ff;margin:8px 0}
+.invest-days{color:#888;font-size:13px}
+.balance-box{text-align:center;padding:25px 20px}
+.balance-amount{font-size:40px;font-weight:900;background:linear-gradient(135deg,#00ff88,#00d4ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.payment-icons{display:flex;gap:15px;width:90%;margin:15px auto}
+.mtn-btn{background:#ffcc00;color:#000}.airtel-btn{background:#ff0044;color:#fff}
+.payment-number-box{background:#25253a;border:2px dashed #00d4ff;padding:20px;border-radius:16px;margin:15px 0;text-align:center}
+.payment-number{font-size:28px;font-weight:900;color:#00ff88}
+.record-item{padding:14px;border-bottom:1px solid #2a2a3a;display:flex;justify-content:space-between;align-items:center}
+.status-pending{color:#ffaa00;font-weight:700}
+.brand-hero{padding:40px 20px;text-align:center}
+.brand-icon{font-size:80px;margin-bottom:15px}
+.brand-name{font-size:32px;font-weight:900;background:linear-gradient(135deg,#00d4ff,#7b2cbf);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.small{font-size:11px;color:#888;text-align:center;margin-top:8px}
+.phone-group{display:flex;width:90%;margin:10px auto;gap:8px}
+.phone-group select{width:35%}.phone-group input{width:65%}
+.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;display:none;background:#1a1a2e;border-top:2px solid #00d4ff;padding:10px 0;z-index:100}
+.bottom-nav.show{display:flex}
+.nav-btn{flex:1;text-align:center;font-size:11px;color:#666;cursor:pointer}
+.nav-btn.icon{font-size:22px;display:block;margin-bottom:3px}
+.nav-btn.active{color:#00d4ff}
+.error-text{color:#ff4444;font-size:12px;text-align:center;margin-top:5px}
+</style>
+</head>
+<body>
 
+<!-- LOGIN / SIGNUP -->
+<div id="login" class="screen active">
+  <div class="header">SITUKA<button class="admin-icon" onclick="goAdminLogin()">🛡️</button></div>
+  <div class="brand-hero"><div class="brand-icon">💰</div><div class="brand-name">SITUKA</div><div style="color:#888">Invest & Earn Daily</div></div>
+  <span class="label">Full Name - As on Mobile Money</span><input id="fullname" placeholder="Enter your full name">
+  <span class="label">🌍 Uganda Phone +256</span>
+  <div class="phone-group">
+    <select><option>+256</option></select>
+    <input id="phone" placeholder="7xxxxxxxx" maxlength="9">
+  </div>
+  <button class="btn" onclick="createAccount()">✨ Create Account</button>
+  <button class="btn btn-outline" onclick="loginExisting()">🔑 Login</button>
+  <div class="small">Your details are saved on this device</div>
+</div>
+
+<!-- ADMIN LOGIN -->
+<div id="adminlogin" class="screen">
+  <div class="header"><span class="back-btn" onclick="showScreen('login')">←</span>Admin Login</div>
+  <div style="text-align:center;padding:50px;font-size:60px">🛡️</div>
+  <span class="label">Admin Name</span><input id="adminname" placeholder="Situka">
+  <span class="label">Password</span><input id="adminpass" type="password" placeholder="Buwembo">
+  <button class="btn" onclick="adminLogin()">Login</button>
+</div>
+
+<!-- ADMIN PANEL -->
+<div id="adminpanel" class="screen">
+  <div class="header"><span class="back-btn" onclick="showScreen('login')">←</span>Situka Panel<span class="logout" onclick="logout()">🚪</span></div>
+  <div class="card">
+    <div style="font-weight:800;text-align:center;margin-bottom:15px">📥 PAYMENTS FROM USERS</div>
+    <div id="paymentlist">No payments yet</div>
+  </div>
+</div>
+
+<!-- INVESTMENTS PAGE -->
+<div id="investments" class="screen">
+  <div class="header">Choose Package<span class="logout" onclick="logout()">🚪</span></div>
+  <div class="balance-box">
+    <div style="color:#888;font-size:13px">Your Balance</div>
+    <div class="balance-amount">UGX <span id="balance">0</span></div>
+  </div>
+
+  <div class="invest-card" onclick="selectPackage(15000,3000,14,this)">
+    <div style="font-weight:800;font-size:18px">PACKAGE 1</div>
+    <div class="invest-amount">UGX 15,000</div>
+    <div class="invest-return">Get UGX 3,000 / Day</div>
+    <div class="invest-days">For 14 Days = UGX 42,000</div>
+  </div>
+
+  <div class="invest-card" onclick="selectPackage(20000,5000,14,this)">
+    <div style="font-weight:800;font-size:18px">PACKAGE 2</div>
+    <div class="invest-amount">UGX 20,000</div>
+    <div class="invest-return">Get UGX 5,000 / Day</div>
+    <div class="invest-days">For 14 Days = UGX 70,000</div>
+  </div>
+
+  <div class="invest-card" onclick="selectPackage(50000,15000,14,this)">
+    <div style="font-weight:800;font-size:18px">PACKAGE 3</div>
+    <div class="invest-amount">UGX 50,000</div>
+    <div class="invest-return">Get UGX 15,000 / Day</div>
+    <div class="invest-days">For 14 Days = UGX 210,000</div>
+  </div>
+
+  <button class="btn btn-success" id="investBtn" onclick="goToPayment()" disabled>🔒 Select a Package</button>
+</div>
+
+<!-- PAYMENT PAGE -->
+<div id="payment" class="screen">
+  <div class="header"><span class="back-btn" onclick="showScreen('investments')">←</span>Complete Payment</div>
+  <div class="card">
+    <div style="text-align:center;margin-bottom:15px">
+      <div style="font-size:14px;color:#888">You Selected</div>
+      <div style="font-size:24px;font-weight:900;color:#00ff88" id="selectedpackage">UGX 0</div>
+    </div>
+    <div style="font-weight:700;margin-bottom:10px">Choose Payment Method: <span style="color:#ff4444">*</span></div>
+    <div class="payment-icons">
+      <div class="payment-btn mtn-btn" id="mtnbtn" onclick="showPayment('MTN')">📱 MTN</div>
+      <div class="payment-btn airtel-btn" id="airtelbtn" onclick="showPayment('Airtel')">📱 AIRTEL</div>
+    </div>
+    <div id="paymenterror" class="error-text"></div>
+    <div id="paymentnumberbox" style="display:none"></div>
+
+    <span class="label">Phone Used for Payment</span><input id="payphone" placeholder="7xxxxxxxx">
+    <span class="label">Names on Mobile Money</span><input id="payname" placeholder="Full names">
+    <span class="label">Paste Payment Message/SMS</span><textarea id="paymsg" placeholder="Paste confirmation SMS here"></textarea>
+    <button class="btn btn-success" onclick="confirmPayment()">📢 Confirm & Send to Situka Channel</button>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard" class="screen">
+  <div class="header">Dashboard<span class="logout" onclick="logout()">🚪</span></div>
+  <div class="balance-box">
+    <div style="color:#888;font-size:13px">Available Balance</div>
+    <div class="balance-amount">UGX <span id="dbalance">0</span></div>
+  </div>
+  <div class="card">
+    <div style="font-weight:700;margin-bottom:10px">📊 Active Investment</div>
+    <div id="activeinvest">No active investment</div>
+  </div>
+  <div class="card"><div style="font-weight:700;margin-bottom:10px">📋 Payment History</div><div id="history">No records yet</div></div>
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav" id="bottomnav">
+  <div class="nav-btn active" onclick="showScreen('investments')"><span class="nav-btn icon">📦</span>Packages</div>
+  <div class="nav-btn" onclick="showScreen('dashboard')"><span class="nav-btn icon">🏠</span>Dashboard</div>
+</div>
+
+<script>
+const ADMIN_NAME = "Situka";
+const ADMIN_PASS = "Buwembo";
+const MTN_NUMBER = "0788417769";
+const AIRTEL_NUMBER = "0743830346";
+const ADMIN_ACCOUNT_NAME = "lubinga Alosious";
+const SITUKA_CHANNEL = "https://whatsapp.com/channel/0029Vb7zGeP6hENj4DX1Qh1L";
+
+let currentUser = null;let currentUserId = null;let selectedPackage = null;let selectedPaymentMethod = '';
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(n=>n.classList.remove('active'));
+  if(id==='investments') document.querySelectorAll('.nav-btn')[0].classList.add('active');
+  if(id==='dashboard') document.querySelectorAll('.nav-btn')[1].classList.add('active');
+}
+
+function saveLocal(key, data){ localStorage.setItem(key, JSON.stringify(data)); }
+function loadLocal(key){ return JSON.parse(localStorage.getItem(key) || 'null'); }
+
+window.createAccount = function(){
+  const name = document.getElementById('fullname').value.trim();
+  const digits = document.getElementById('phone').value.trim();
+  if(!name ||!digits || digits.length!==9) return alert('Fill all fields. 9 digits');
+  const phone = "+256" + digits;
+  currentUserId = btoa(phone).replace(/=/g,'');
+  currentUser = {name,phone,balance:0,payments:[],investments:[]};
+  saveLocal('situka_user_'+currentUserId, currentUser);
+  document.getElementById('bottomnav').classList.add('show');
+  updateBalance(); showScreen('investments');
+}
+
+window.loginExisting = function(){
+  const digits = document.getElementById('phone').value.trim();
+  if(!digits || digits.length!==9) return alert('Enter phone to login');
+  const phone = "+256" + digits;
+  currentUserId = btoa(phone).replace(/=/g,'');
+  currentUser = loadLocal('situka_user_'+currentUserId);
+  if(!currentUser) return alert('Account not found. Create account first');
+  document.getElementById('bottomnav').classList.add('show');
+  updateBalance(); showScreen('investments');
+}
+
+window.goAdminLogin = function(){ document.getElementById('bottomnav').classList.remove('show'); showScreen('adminlogin'); }
+window.adminLogin = function(){
+  const name = document.getElementById('adminname').value.trim();
+  const pass = document.getElementById('adminpass').value.trim();
+  if(name === ADMIN_NAME && pass === ADMIN_PASS){
+    document.getElementById('bottomnav').classList.remove('show');
+    showScreen('adminpanel');loadPayments();
+  } else alert('Invalid credentials. Use: Situka / Buwembo');
+}
+window.logout = function(){ currentUser=null; currentUserId=null; document.getElementById('bottomnav').classList.remove('show'); showScreen('login'); }
+
+window.selectPackage = function(amount, daily, days, el){
+  document.querySelectorAll('.invest-card').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedPackage = {amount, daily, days, total:daily*days};
+  document.getElementById('investBtn').disabled=false;
+  document.getElementById('investBtn').textContent = `🚀 Invest UGX ${amount.toLocaleString()}`;
+  document.getElementById('selectedpackage').textContent = `UGX ${amount.toLocaleString()}`;
+}
+
+window.goToPayment = function(){
+  if(!selectedPackage) return;
+  selectedPaymentMethod = ''; // reset
+  document.getElementById('paymenterror').textContent = '';
+  document.getElementById('mtnbtn').classList.remove('selected');
+  document.getElementById('airtelbtn').classList.remove('selected');
+  document.getElementById('paymentnumberbox').style.display='none';
+  showScreen('payment');
+}
+
+window.showPayment = function(method){
+  selectedPaymentMethod = method;
+  document.getElementById('paymenterror').textContent = '';
+  document.getElementById('mtnbtn').classList.remove('selected');
+  document.getElementById('airtelbtn').classList.remove('selected');
+
+  if(method === 'MTN') document.getElementById('mtnbtn').classList.add('selected');
+  if(method === 'Airtel') document.getElementById('airtelbtn').classList.add('selected');
+
+  const number = method==='MTN'? MTN_NUMBER : AIRTEL_NUMBER;
+  document.getElementById('paymentnumberbox').style.display='block';
+  document.getElementById('paymentnumberbox').innerHTML = `
+    <div class="payment-number-box">
+      <div>Send UGX ${selectedPackage.amount.toLocaleString()} to:</div>
+      <div class="payment-number">${number}</div>
+      <div>Account Name: ${ADMIN_ACCOUNT_NAME}</div>
+    </div>
+  `;
+}
+
+// MUST SELECT PAYMENT METHOD
+window.confirmPayment = function(){
+  const payphone = document.getElementById('payphone').value.trim();
+  const payname = document.getElementById('payname').value.trim();
+  const paymsg = document.getElementById('paymsg').value.trim();
+
+  if(!selectedPaymentMethod){
+    document.getElementById('paymenterror').textContent = '⚠️ Please select MTN or AIRTEL first';
+    return alert('Please select a payment method: MTN or AIRTEL');
+  }
+  if(!payphone ||!payname ||!paymsg) return alert('Please fill all payment details');
+
+  // 1. Save to local
+  const payment = {
+    id:Date.now().toString(),
+    name: currentUser.name,
+    userPhone: currentUser.phone,
+    package: selectedPackage,
+    method: selectedPaymentMethod,
+    payPhone: payphone,
+    payName: payname,
+    payMsg: paymsg,
+    status: "pending",
+    time: Date.now()
+  };
+  let payments = loadLocal('situka_payments') || []; payments.push(payment); saveLocal('situka_payments', payments);
+
+  // 2. Build WhatsApp message
+  const message = `🎴 *SITUKA PAYMENT CONFIRMATION* 🎴
+
+*Amount Sent:* UGX ${selectedPackage.amount.toLocaleString()}
+*Package:* ${selectedPackage.daily.toLocaleString()}/day x ${selectedPackage.days} days
+*Method:* ${selectedPaymentMethod}
+*Account:* ${selectedPaymentMethod==='MTN'? MTN_NUMBER : AIRTEL_NUMBER}
+*Account Name:* ${ADMIN_ACCOUNT_NAME}
+
+*Payment Details:*
+*User Account:* ${currentUser.name} - ${currentUser.phone}
+*Phone Used:* ${payphone}
+*Names:* ${payname}
+*SMS:* ${paymsg}
+
+Please approve my investment.
+Join Channel: ${SITUKA_CHANNEL}`;
+
+  const encodedMsg = encodeURIComponent(message);
+  window.location.href = `https://api.whatsapp.com/send?text=${encodedMsg}`;
+
+  alert('✅ Redirecting to WhatsApp... Send the message in Situka Channel');
+  showScreen('investments');
+  document.getElementById('payphone').value = '';
+  document.getElementById('payname').value = '';
+  document.getElementById('paymsg').value = '';
+}
+
+function loadPayments(){
+  let payments = loadLocal('situka_payments') || [];
+  const list = document.getElementById('paymentlist');
+  if(payments.length === 0){ list.innerHTML = 'No payments yet'; return; }
+  list.innerHTML = payments.map(p => `
+    <div class="record-item">
+      <div>
+        <div style="font-weight:700">${p.name}</div>
+        <div style="font-size:11px">${p.userPhone}</div>
+        <div style="color:#00ff88">UGX ${p.package.amount.toLocaleString()} via ${p.method}</div>
+        <div style="font-size:10px">From: ${p.payPhone} | ${p.payName}</div>
+        <div style="font-size:9px;color:#888">${p.payMsg}</div>
+      </div>
+      <div class="status-pending">${p.status.toUpperCase()}</div>
+    </div>
+  `).join('');
+}
+
+function updateBalance(){
+  if(currentUser){
+    document.getElementById('balance').textContent = currentUser.balance.toLocaleString();
+    document.getElementById('dbalance').textContent = currentUser.balance.toLocaleString();
+  }
+}
+</script>
+</body>
+</html>
