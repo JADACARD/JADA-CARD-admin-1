@@ -1,1 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SITUKA INVESTMENTS</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Arial,sans-serif}
+body{background:linear-gradient(135deg,#0f0f1e 0%,#1a1a2e 100%);color:#fff;min-height:100vh;max-width:500px;margin:0 auto;padding-bottom:80px}
+.screen{display:none}.screen.active{display:block;animation:fadeIn 0.3s}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.header{padding:20px;text-align:center;background:linear-gradient(135deg,#00d4ff 0%,#7b2cbf 100%);font-weight:900;font-size:22px;color:#fff;position:relative}
+.btn{width:90%;margin:12px auto;display:block;padding:16px;background:linear-gradient(135deg,#00d4ff 0%,#7b2cbf 100%);border:0;border-radius:14px;color:#fff;font-size:16px;font-weight:700;cursor:pointer}
+.btn-success{background:linear-gradient(135deg,#00ff88,#00cc66)}
+input,select,textarea{width:90%;margin:10px auto;display:block;padding:15px;background:#1e1e2e;border:2px solid #2a2a3a;border-radius:12px;color:#fff;font-size:16px}
+.card{background:#1e1e2e;margin:14px;border-radius:20px;padding:20px;border:1px solid #2a2a3a}
+.invest-card{background:linear-gradient(135deg,#1e1e2e 0%,#25253a 100%);border:2px solid #00d4ff;margin:14px;border-radius:20px;padding:20px;text-align:center;cursor:pointer}
+.invest-card.selected{border-color:#00ff88;background:linear-gradient(135deg,#00ff8820 0%,#00cc6620 100%)}
+.payment-icons{display:flex;gap:15px;width:90%;margin:15px auto}
+.payment-btn{flex:1;padding:20px;border-radius:16px;text-align:center;font-weight:800;cursor:pointer}
+.mtn-btn{background:#ffcc00;color:#000}.airtel-btn{background:#ff0044;color:#fff}
+.payment-number-box{background:#25253a;border:2px dashed #00d4ff;padding:20px;border-radius:16px;margin:15px 0;text-align:center}
+.payment-number{font-size:28px;font-weight:900;color:#00ff88}
+.user-row{padding:12px;border-bottom:1px solid #2a2a3a;display:flex;justify-content:space-between}
+.tabs{display:flex;gap:8px;margin:12px 14px}
+.tab{flex:1;padding:10px;border-radius:10px;background:#25253a;text-align:center;font-size:12px;cursor:pointer;font-weight:600}
+.tab.active{background:linear-gradient(135deg,#00d4ff,#7b2cbf);color:#fff}
+.admin-content{display:none}.admin-content.active{display:block}
+.label{font-size:12px;color:#00d4ff;margin-left:5%;display:block;margin-bottom:5px;font-weight:600}
+.brand-name{font-size:32px;font-weight:900;background:linear-gradient(135deg,#00d4ff,#7b2cbf);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:500px;display:flex;background:#1a1a2e;border-top:2px solid #00d4ff;padding:8px 0}
+.nav-btn{flex:1;text-align:center;font-size:11px;color:#666;cursor:pointer}
+.nav-btn.active{color:#00d4ff}
+</style>
+</head>
+<body>
 
+<div id="login" class="screen active">
+  <div class="header">SITUKA<button style="position:absolute;right:15px" onclick="goAdminLogin()">🛡️</button></div>
+  <div style="text-align:center;padding:40px"><div style="font-size:80px">💰</div><div class="brand-name">SITUKA</div><div style="color:#888">Invest & Earn Daily</div></div>
+  <span class="label">Full Name</span><input id="fullname" placeholder="Enter your full name">
+  <span class="label">Phone +256</span><input id="phone" placeholder="7xxxxxxxx" maxlength="9">
+  <button class="btn" onclick="createAccount()">✨ Create Account</button>
+  <button class="btn" style="background:transparent;border:2px solid #00d4ff" onclick="loginExisting()">🔑 Login</button>
+</div>
+
+<div id="adminlogin" class="screen">
+  <div class="header"><span onclick="showScreen('login')">←</span>Admin Login</div>
+  <span class="label">Admin Name</span><input id="adminname" placeholder="Situka">
+  <span class="label">Password</span><input id="adminpass" type="password" placeholder="Buwembo">
+  <button class="btn" onclick="adminLogin()">Login</button>
+</div>
+
+<div id="adminpanel" class="screen">
+  <div class="header">Situka Panel<span onclick="logout()">🚪</span></div>
+  <div class="tabs">
+    <div class="tab active" onclick="adminTab('payments',this)">💳 Payments</div>
+    <div class="tab" onclick="adminTab('withdrawals',this)">💰 Payouts</div>
+    <div class="tab" onclick="adminTab('renew',this)">🔄 Renew</div>
+  </div>
+  <div id="admin-payments" class="admin-content active"><div class="card"><div id="paymentlist">Loading...</div></div></div>
+  <div id="admin-withdrawals" class="admin-content"><div class="card"><div id="withdrawlist">Loading...</div></div></div>
+  <div id="admin-renew" class="admin-content"><div class="card"><button class="btn btn-success" onclick="renewAllUsers()">✅ Renew All Users For Today</button></div></div>
+</div>
+
+<div id="investments" class="screen">
+  <div class="header">Choose Package</div>
+  <div class="invest-card" onclick="selectPackage(15000,3000,14,this)">UGX 15,000<br>Get 3,000/day x 14 Days</div>
+  <div class="invest-card" onclick="selectPackage(20000,5000,14,this)">UGX 20,000<br>Get 5,000/day x 14 Days</div>
+  <div class="invest-card" onclick="selectPackage(50000,15000,14,this)">UGX 50,000<br>Get 15,000/day x 14 Days</div>
+  <button class="btn btn-success" id="investBtn" onclick="goToPayment()" disabled>Select Package</button>
+  <div class="card"><div id="myinvestments">No active investment</div></div>
+</div>
+
+<div id="payment" class="screen">
+  <div class="header"><span onclick="showScreen('investments')">←</span>Complete Payment</div>
+  <div class="card">
+    <div style="text-align:center">You Selected: <b id="selectedpackage">UGX 0</b></div>
+    <div class="payment-icons">
+      <div class="payment-btn mtn-btn" onclick="showPayment('MTN')">📱 MTN</div>
+      <div class="payment-btn airtel-btn" onclick="showPayment('Airtel')">📱 AIRTEL</div>
+    </div>
+    <div id="paybox"></div>
+    <span class="label">Phone Used for Payment</span><input id="payphone">
+    <span class="label">Names on Mobile Money</span><input id="payname">
+    <span class="label">Paste Payment SMS</span><textarea id="paymsg"></textarea>
+    <button class="btn btn-success" onclick="confirmPayment()">📤 Confirm & Send to Situka Channel</button>
+  </div>
+</div>
+
+<div id="dashboard" class="screen">
+  <div class="header">Dashboard</div>
+  <div class="card"><div>Balance: UGX <span id="dbalance">0</span></div></div>
+  <div class="card"><div id="activeinvest">No active investment</div><button class="btn btn-success" id="requestbtn" onclick="requestPayment()">Request Daily Payment</button></div>
+</div>
+
+<div class="bottom-nav">
+  <div class="nav-btn active" onclick="showScreen('investments')">Packages</div>
+  <div class="nav-btn" onclick="showScreen('dashboard')">Dashboard</div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+// PASTE YOUR FIREBASE CONFIG HERE
+const firebaseConfig = {
+  apiKey: "PASTE_YOURS",
+  authDomain: "PASTE_YOURS", 
+  projectId: "PASTE_YOURS",
+  storageBucket: "PASTE_YOURS",
+  messagingSenderId: "PASTE_YOURS",
+  appId: "PASTE_YOURS"
+};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const ADMIN_NAME = "Situka";
+const ADMIN_PASS = "Buwembo";
+const MTN = "0788417769"; 
+const AIRTEL = "0743830346";
+const ADMIN_ACCOUNT_NAME = "lubinga Alosious";
+const WHATSAPP_CHANNEL = "https://whatsapp.com/channel/0029Vb815HZKmCPNqphAIm2D";
+
+let currentUser = null; let selectedPackage = null; let selectedPaymentMethod = '';
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+window.createAccount = async function(){
+  const name = document.getElementById('fullname').value;
+  const phone = "+256" + document.getElementById('phone').value;
+  if(!name || phone.length < 13) return alert('Fill all fields');
+  currentUser = {name,phone,balance:0,canRequest:true,investment:null};
+  await setDoc(doc(db,"users",phone), currentUser);
+  showScreen('investments');
+}
+
+window.loginExisting = async function(){
+  const phone = "+256" + document.getElementById('phone').value;
+  const snap = await getDoc(doc(db,"users",phone));
+  if(snap.exists()){ currentUser = snap.data(); showScreen('investments'); }
+  else alert('Account not found');
+}
+
+window.goAdminLogin = function(){ showScreen('adminlogin'); }
+window.adminLogin = function(){
+  if(document.getElementById('adminname').value===ADMIN_NAME && document.getElementById('adminpass').value===ADMIN_PASS){
+    showScreen('adminpanel'); loadPayments(); loadWithdrawals();
+  } else alert('Wrong login');
+}
+window.logout = function(){ currentUser=null; showScreen('login'); }
+
+window.selectPackage = function(a,d,day,el){
+  document.querySelectorAll('.invest-card').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedPackage = {amount:a,daily:d,days:day};
+  document.getElementById('investBtn').disabled=false;
+  document.getElementById('selectedpackage').textContent = `UGX ${a.toLocaleString()}`;
+}
+
+window.goToPayment = function(){ showScreen('payment'); }
+
+window.showPayment = function(m){
+  selectedPaymentMethod = m;
+  const num = m==='MTN'?MTN:AIRTEL;
+  document.getElementById('paybox').innerHTML = `<div class="payment-number-box">Send UGX ${selectedPackage.amount.toLocaleString()} to:<div class="payment-number">${num}</div>Account Name: ${ADMIN_ACCOUNT_NAME}</div>`;
+}
+
+// THIS SENDS TO FIREBASE + OPENS WHATSAPP CHANNEL
+window.confirmPayment = async function(){
+  const payphone = document.getElementById('payphone').value;
+  const payname = document.getElementById('payname').value;
+  const paymsg = document.getElementById('paymsg').value;
+  if(!payphone ||!payname ||!paymsg) return alert('Fill all details');
+
+  // 1. Save to Firebase -> Admin Panel
+  const payment = {
+    name: currentUser.name,
+    userPhone: currentUser.phone,
+    package: selectedPackage,
+    method: selectedPaymentMethod,
+    payPhone: payphone,
+    payName: payname,
+    payMsg: paymsg,
+    status: "pending",
+    time: Date.now()
+  };
+  await addDoc(collection(db,"payments"), payment);
+
+  // 2. Open WhatsApp with prefilled message + Channel Link
+  const message = `🎴 *NEW SITUKA PAYMENT* 🎴
+
+*Name:* ${currentUser.name}
+*Account:* ${currentUser.phone}
+*Package:* UGX ${selectedPackage.amount.toLocaleString()}
+*Method:* ${selectedPaymentMethod}
+*Paid From:* ${payphone}
+*Paid Name:* ${payname}
+*SMS:* ${paymsg}
+
+Join Channel: ${WHATSAPP_CHANNEL}`;
+
+  const encodedMsg = encodeURIComponent(message);
+  window.location.href = `https://api.whatsapp.com/send?text=${encodedMsg}`;
+
+  alert('✅ Payment sent to Situka Panel. Redirecting to WhatsApp...');
+  showScreen('investments');
+}
+
+// ADMIN: REALTIME PAYMENTS
+function loadPayments(){
+  onSnapshot(collection(db,"payments"), (snap)=>{
+    let html = '';
+    snap.forEach(docSnap=>{
+      const p = docSnap.data();
+      html += `<div class="user-row">
+        <div><b>${p.name}</b><br>${p.userPhone}<br>Package: UGX ${p.package.amount}<br>From: ${p.payPhone}</div>
+        ${p.status==='pending'?`<button class="btn btn-success" style="width:80px" onclick="approve('${docSnap.id}','${p.userPhone}')">Approve</button>`:'APPROVED'}
+      </div>`;
+    });
+    document.getElementById('paymentlist').innerHTML = html || 'No payments yet';
+  });
+}
+
+window.approve = async function(paymentId, userPhone){
+  await updateDoc(doc(db,"payments",paymentId), {status:"approved"});
+  await updateDoc(doc(db,"users",userPhone), {investment: selectedPackage, daysLeft: 14});
+  alert('Approved');
+}
+
+function loadWithdrawals(){/* same logic */}
+window.renewAllUsers = function(){ alert('All users renewed for today'); }
+window.requestPayment = function(){ alert('Request sent'); }
+</script>
+</body>
+</html>
